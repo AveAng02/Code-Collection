@@ -164,6 +164,8 @@ void DFT_postorder(node* hook){
     std::cout << hook->data << std::endl;
 }
 
+/////////////////////////////////////
+
 bool isBST(node* hook){
     if(hook == NULL || hook->leftChild == NULL || hook->rightChild == NULL){
         return true;
@@ -204,9 +206,9 @@ node* deleteNode(node* hook, int data){
             delete result;
         }
         else{ // for when both sides have data
-            result = minimum(hook);
+            result = minimum(hook->rightChild);
             hook->data = result->data;
-            hook->rightChild = deleteNode(hook->rightChild, hook->data);
+            hook->rightChild = deleteNode(hook->rightChild, result->data);
         }
     }
 
@@ -224,22 +226,16 @@ int main() {
         root = insert(root, arr[i]);
     }
 
-    BFT(root);
 
-    root = deleteNode(root, 9);
 
-    std::cout << "after deleting 9:\n";
-    BFT(root);
 
-    root = deleteNode(root, 6);
 
-    std::cout << "after deleting 6:\n";
-    BFT(root);
 
-    root = deleteNode(root, 4);
 
-    std::cout << "after deleting 4:\n";
-    BFT(root);
+
+    for(int i = 0; i < 12; i++){
+        root = deleteNode(root, arr[i]);
+    }
 
     return 0;
 }
