@@ -149,9 +149,9 @@ void DFT_inorder(node* hook){
         return;
     }
     
-    DFT_preorder(hook->leftChild);
+    DFT_inorder(hook->leftChild);
     std::cout << hook->data << std::endl;
-    DFT_preorder(hook->rightChild);
+    DFT_inorder(hook->rightChild);
 }
 
 void DFT_postorder(node* hook){
@@ -180,6 +180,7 @@ bool isBST(node* hook){
 }
 
 node* deleteNode(node* hook, int data){
+    // Add senario when data is not found
     
     node* result = hook;
     
@@ -220,23 +221,35 @@ int main() {
 
     node* root = NULL;
 
-    int arr[12] = {8, 4, 11, 2, 6, 10, 9, 13, 12, 14, 5, 3};
+    int arr[12] = {35, 75, 40, 60, 25, 30, 15, 20, 7};//{7, 25, 30, 35, 40, 20, 75, 15, 60};
 
-    for(int i = 0; i < 12; i++){
+    for(int i = 0; i < 9; i++){
         root = insert(root, arr[i]);
     }
 
+    DFT_inorder(root);
+    std::cout << "\n";
+    BFT(root);
+    std::cout << "\n";
 
+    root = deleteNode(root, 35);
 
+    DFT_inorder(root);
+    std::cout << "\n";
+    BFT(root);
+    std::cout << "\n";
 
+    root = deleteNode(root, 20);
 
-
-
-
+    DFT_inorder(root);
+    std::cout << "\n";
+    BFT(root);
+    std::cout << "\n";
+/*
     for(int i = 0; i < 12; i++){
         root = deleteNode(root, arr[i]);
     }
-
+*/
     return 0;
 }
 

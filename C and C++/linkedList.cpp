@@ -1,12 +1,12 @@
 #include <iostream>
 
 
-struct Node
+struct node
 {
     // data 
     int data;
-    // position of next Node
-    Node* next;
+    // position of next node
+    node* nexPos;
 };
 
 /*
@@ -17,112 +17,95 @@ Write functions for the following features:
  * read specific cell
  * modify the value of specific cell
  * print entire list
-
-TODO:
- * delete node with specific value
- * append two linked lists
- * reverse the linked list
- * search for a specific value
- * create a copy of the list
- * insert node at specific position(and efficiently)
- * delete node from specific position
- * insert node at the end of the list
  */
 
 
 /*
- * Syntax: insert(integer, pointer of type Node)
- * Return Value: returns a pointer to the newly created Node (The calling function needs to replace the start value by this pointer.)
- * Functionality: adds a Node to the present linked list.
+ * Syntax: insert(integer, pointer of type node)
+ * Return Value: returns a pointer to the newly created node (The calling function needs to replace the start value by this pointer.)
+ * Functionality: adds a node to the present linked list.
  */
-// FIXME:
-// Malloc can fain. Thus add a NULL check.
-Node* insert(int new_data, Node* old_pointer)
+node* insert(int new_data, node* old_pointer)
 {
-    Node* temp = (Node*)malloc(sizeof(Node));
+    node* temp = (node*)malloc(sizeof(node));
     (*temp).data = new_data;
-    (*temp).next = old_pointer;
+    (*temp).nexPos = old_pointer;
     return temp;
 }
 
 
 /*
- * Syntax: remove(pointer of type Node)
- * Return Value: pointer of type Node
- * Functionality: removes a Node from the linked list.
+ * Syntax: remove(pointer of type node)
+ * Return Value: pointer of type node
+ * Functionality: removes a node from the linked list.
  */
-Node* remove(Node* startPosition)
+node* remove(node* startPosition)
 {
     if(startPosition != NULL)
     {
-        Node* temp = (*startPosition).next;
+        node* temp = (*startPosition).nexPos;
         std::cout << (*startPosition).data << " getting freed......" << std::endl;
         free(startPosition);
         return temp;
     }
     else
     {
-        std::cout << "No Nodes to be removed......." << std::endl;
+        std::cout << "No nodes to be removed......." << std::endl;
         return NULL;
     }
 }
 
 
 /*
- * Syntax: length(pointer of type Node)
- * Return Value: int
- * Functionality: returns the length of the linked list.
+ * Syntax: length(pointer of type node)
+ * Return Value: void
+ * Functionality: prints the length of the linked list.
  */
-int length(Node* starting_point)
+void length(node* starting_point)
 {
     int count = 0;
 
     while(starting_point != NULL)
     {
         count++;
-        starting_point = (*starting_point).next;
+        starting_point = (*starting_point).nexPos;
 
     } 
 
-    return count;
+    std::cout << "The length of the list: " << count << std::endl;
 }
 
 
 /*
- * Syntax: readData(integer, pointer of type Node)
- * Return Value: int
+ * Syntax: readData(integer, pointer of type node)
+ * Return Value: void
  * Functionality: prints the value in a specific location.
  */
-// 
-int readData(int position, Node* startPos)
+void readData(int position, node* startPos)
 {
     int count = 0;
 
     while(count != position)
     {
-        startPos = (*startPos).next;
+        startPos = (*startPos).nexPos;
         count++;
     }
-    return count;
+    std::cout << (*startPos).data << std::endl;
 }
 
 
 /*
- * Syntax: update(integer, integer, pointer of type Node)
+ * Syntax: modData(integer, integer, pointer of type node)
  * Return Value: void
  * Functionality: replaces the sent position with the sent new data.
  */
-// FIXME:
-// return a bool to make sure the change is made
-// Null check on Node
-// if position > length of list
-void update(int position, int new_data, Node* startPos)
+void modData(int position, int new_data, node* startPos)
 {
     int count = 0;
 
     while(count != position)
     {
-        startPos = (*startPos).next;
+        startPos = (*startPos).nexPos;
         count++;
     }
     (*startPos).data = new_data;
@@ -130,11 +113,11 @@ void update(int position, int new_data, Node* startPos)
 
 
 /*
- * Syntax: printLst(pointer of type Node)
+ * Syntax: printLst(pointer of type node)
  * Return Value: void
  * Functionality: prints all the values in the linked list.
  */
-void printLst(Node* starting_point)
+void printLst(node* starting_point)
 {
     std::cout << "The entire list is:\n";
 
@@ -143,7 +126,7 @@ void printLst(Node* starting_point)
     while(starting_point != NULL)
     {
         std::cout << (*starting_point).data << "  ";
-        starting_point = (*starting_point).next;
+        starting_point = (*starting_point).nexPos;
 
     } 
     std::cout << "]\n";
@@ -151,21 +134,20 @@ void printLst(Node* starting_point)
 
 
 /*
- * Syntax: removeAll(pointer of type Node)
+ * Syntax: removeAll(pointer of type node)
  * Return Value: void
  * Functionality: frees all the allocated memory in the linked list
  */
-void removeAll(Node* starting_point)
+void removeAll(node* starting_point)
 {
-    Node* temp = NULL;
+    node* temp = NULL;
 
     while(starting_point != NULL)
     {
         temp = starting_point;
         std::cout << (*starting_point).data << " getting freed......" << std::endl;
-        starting_point = (*starting_point).next;
+        starting_point = (*starting_point).nexPos;
         free(temp);
-        temp = NULL;
     }
 }
 
@@ -174,7 +156,7 @@ void removeAll(Node* starting_point)
 
 int main()
 {
-    Node* start = NULL;
+    node* start = NULL;
 
     int flag = 0, inp = 0, pos = 0, newData = 0;
 
@@ -190,14 +172,14 @@ int main()
         * enter 6 for print entire list
         */
 
-       std::cout << "Enter:\n1 for adding new Node at the beginning\n2 for remove a Node from beginning\n3 for length of list\n";
+       std::cout << "Enter:\n1 for adding new node at the beginning\n2 for remove a node from beginning\n3 for length of list\n";
        std::cout << "4 for read data specific cell position(starts from 0)\n5 for modify the value of specific cell(starts from 0)\n6 for printing list\n7 for exit program\n";
        std::cin >> flag;
 
        switch (flag)
        {
        case 1:
-            std::cout << "Enter integer type data for new Node:";
+            std::cout << "Enter integer type data for new node:";
             std::cin >> inp;
             start = insert(inp, start);
             break;
@@ -207,13 +189,13 @@ int main()
             break;
 
        case 3:
-            std::cout << length(start) << std::endl;
+            length(start);
             break;
 
        case 4:
             std::cout << "Enter position:";
             std::cin >> pos;
-            std::cout << readData(pos, start) << std::endl;
+            readData(pos, start);
             break;
 
        case 5:
@@ -221,7 +203,7 @@ int main()
             std::cin >> pos;
             std::cout << "Enter new data:";
             std::cin >> newData;
-            update(pos, newData, start);
+            modData(pos, newData, start);
             break;
 
        case 6:
