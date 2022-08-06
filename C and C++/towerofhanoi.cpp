@@ -9,6 +9,13 @@
 * donot put even disk on even disk
 * donot put odd disk on odd disk
 *
+* six possible moves :
+* start => target ( when num is odd | when target.top() > start.top() | when target.top() and start.top() has different parity )
+* start => spare ( | when target.top() > start.top() | when target.top() and start.top() has different parity )
+* target => start
+* target => spare
+* spare => target
+* spare => start
 */
 
 
