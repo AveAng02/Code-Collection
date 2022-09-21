@@ -30,6 +30,8 @@
 	{
 		std::cout << "Marker 0 : Starting Build" << std::endl; // Debugging marker
 		
+		std::cout << "Creating Root Node with Coordinates : " << CoOrdinateList[0][0] << " " << CoOrdinateList[0][1] << " " << CoOrdinateList[0][2] << std::endl; // Debugging Marker
+		
 		root = root->CreateNewNode(CoOrdinateList[0][0], CoOrdinateList[0][1], CoOrdinateList[0][2]);
 		
 		std::shared_ptr<KDNode> hook = root;
@@ -38,7 +40,7 @@
 		
 		// NumberOfDimen = CoOrdinateList[i].size();
 		
-		for(int while_counter = 0, dimen_tracker = 0, counter = 1; counter < CoOrdinateList.size(); counter++)
+		for(int while_counter = 1, dimen_tracker = 0, counter = 1; counter < CoOrdinateList.size(); counter++)
 		{
 			// push in the coordinates inside this for loop
 			
@@ -55,6 +57,8 @@
 			// while loop aims to return the pointer where the new KDNode is attached
 			// at the end of the cycle hook is the pointer to this new node
 			{
+				NodesCoOrd.clear(); // clearing out the vector to enter new coordinates
+				
 				/*
 				* Algo for while loop:
 				* 
@@ -66,20 +70,20 @@
 				*/
 				
 				
-				std::cout << "Marker 2 : Entering While loop" << std::endl; // Debugging Marker
+				std::cout << "Marker 2 : Entering While loop " << while_counter + 1 << std::endl; // Debugging Marker
 				
 				// dimen_tracker is assigned the dimention we will check against
 				// it iterates through all the position values from 0 to k which signifies the dimentions here
 				// the modulus operator keeps the value within the range of 0 to k
 				// 
-				dimen_tracker = while_counter % 2; // later change this to 3 for 3D
-				
+				dimen_tracker = while_counter % NUMDIMEN; 
 				
 				// get the coordinates stored in the node for comparison
 				NodesCoOrd.push_back(hook->X);
 				NodesCoOrd.push_back(hook->Y);
 				NodesCoOrd.push_back(hook->Z);
 				
+				std::cout << "Comparison Node : { " << NodesCoOrd[0] << ", " << NodesCoOrd[1] << ", " << NodesCoOrd[2] << "} " << std::endl;
 				
 				// comparison if blocks to check which direction to send the coordinate to
 				if(NodesCoOrd[dimen_tracker] > CoOrdinateList[counter][dimen_tracker])
@@ -91,15 +95,17 @@
 						// a new node is created by calling the NewNode function and is sent to create the left branch
 						hook->left = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
 						
-						std::cout << "Marker 3 (1): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+						std::cout << "Marker 4(1) : Going left at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
-						hook = hook->left;
+						std::cout << "Marker 3 (1): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
 						
 						break;
 					}
 					else
 					// if the left node is occupid then move on with by replacing hook with this new node
 					{
+						std::cout << "Marker 4(1) : Going left at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
+						
 						hook = hook->left;
 					}
 				}
@@ -112,15 +118,17 @@
 						// a new node is created by calling the NewNode function and is sent to create the Right branch
 						hook->right = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
 						
-						std::cout << "Marker 3 (2): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+						std::cout << "Marker 4(2) : Going right @ at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
-						hook = hook->right;
+						std::cout << "Marker 3 (2): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
 						
 						break;
 					}
 					else
 					// if the Right node is occupid then move on with by replacing hook with this new node
 					{
+						std::cout << "Marker 4(2) : Going right  # at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
+						
 						hook = hook->right;
 					}
 				}
@@ -140,9 +148,9 @@
 					{
 						hook->right = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
 						
-						std::cout << "Marker 3 (4): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+						std::cout << "Marker 4(2) : Going right $ at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
-						hook = hook->right;
+						std::cout << "Marker 3 (4): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
 						
 						break;
 					}
@@ -150,9 +158,9 @@
 					{
 						hook->left = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
 						
-						std::cout << "Marker 3 (3): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+						std::cout << "Marker 4(1) : Going left  at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
-						hook = hook->left;
+						std::cout << "Marker 3 (3): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
 						
 						break;
 					}
@@ -175,6 +183,23 @@
 	*	> nearest neighbour
 	*	> DFS
 	*/
+	
+	
+	void KDTree::DFT()
+	{
+		if(root == nullptr)
+		{
+			std::cout << "\nTree not built yet.\n" << std::endl;
+			
+			return;
+		}
+		
+		std::cout << "\nRoot : ";
+		
+		recursiveDFT(root);
+		
+		std::cout << std::endl;
+	}
 
 
 	bool KDTree::intersects()
@@ -193,8 +218,173 @@
 	}
 
 
+bool KDTree::searchCoord(int X, int Y, int Z)
+{
+	std::shared_ptr<KDNode> traversal = root;
+	
+	int while_counter = 0; // as 'X' is already checked thus we assign 1 to while and start from 'Y'
+	
+	int dimen_tracker = 0; // tracks which dimention the nodes will be checked against
+	
+	std::cout << "Search Marker 1 : Starting Search" << std::endl; // Debugging marker
+	
+	while(traversal != nullptr)
+	{
+		dimen_tracker = while_counter % NUMDIMEN; 
+		
+		std::cout << "Checking against : { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+		
+		if(dimen_tracker == 0)
+		{
+			// check against X
+			if(traversal->X == X && traversal->Y == Y && traversal->Z == Z)
+			// check if the required coordinate is at root
+			{
+				std::cout << "Search Marker 2(1) : Node Found" << std::endl; // Debugging marker
+				
+				return true;
+			}
+			else if(traversal->X >= X && traversal->left != nullptr)
+			// if X is smaller or equal send to left subtree
+			// the build is biased towards left subtree in case X are equal
+			// thus search also has the same bias to find the coordinate 
+			{
+				std::cout << "Search Marker 3(1) : Going Left" << std::endl; // Debugging marker
+				
+				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+				
+				traversal = traversal->left;
+			}
+			else if(traversal->X >= X && traversal->left != nullptr)
+			// if X is smaller or equal send to left subtree
+			// the build is biased towards left subtree in case X are equal
+			// thus search also has the same bias to find the coordinate 
+			{
+				std::cout << "Search Marker 2(2) : Node Not Found" << std::endl; // Debugging marker
+				
+				return false;
+			}
+			else
+			// if X is greater than then send to right subtree
+			{
+				std::cout << "Search Marker 3(2) : Going right" << std::endl; // Debugging marker
+				
+				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+				
+				traversal = traversal->right;
+			}
+		}
+		else if(dimen_tracker == 1)
+		{
+			// check against Y
+			if(traversal->X == X && traversal->Y == Y && traversal->Z == Z)
+			// check if the required coordinate is at root
+			{
+				std::cout << "Search Marker 2(1) : Node Found" << std::endl; // Debugging marker
+				
+				return true;
+			}
+			else if(traversal->Y >= Y && traversal->left != nullptr)
+			// if X is smaller or equal send to left subtree
+			// the build is biased towards left subtree in case X are equal
+			// thus search also has the same bias to find the coordinate 
+			{
+				std::cout << "Search Marker 3(1) : Going Left" << std::endl; // Debugging marker
+				
+				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+				
+				traversal = traversal->left;
+			}
+			else if(traversal->Y >= Y && traversal->left != nullptr)
+			// if X is smaller or equal send to left subtree
+			// the build is biased towards left subtree in case X are equal
+			// thus search also has the same bias to find the coordinate 
+			{
+				std::cout << "Search Marker 2(2) : Node Not Found" << std::endl; // Debugging marker
+				
+				return false;
+			}
+			else
+			// if X is greater than then send to right subtree
+			{
+				std::cout << "Search Marker 3(2) : Going right" << std::endl; // Debugging marker
+				
+				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+				
+				traversal = traversal->right;
+			}
+		}
+		else
+		{
+			// check against Z
+			// check against X
+			if(traversal->X == X && traversal->Y == Y && traversal->Z == Z)
+			// check if the required coordinate is at root
+			{
+				std::cout << "Search Marker 2(1) : Node Found" << std::endl; // Debugging marker
+				
+				return true;
+			}
+			else if(traversal->Z >= Z && traversal->left != nullptr)
+			// if X is smaller or equal send to left subtree
+			// the build is biased towards left subtree in case X are equal
+			// thus search also has the same bias to find the coordinate 
+			{
+				std::cout << "Search Marker 3(1) : Going Left" << std::endl; // Debugging marker
+				
+				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+				
+				traversal = traversal->left;
+			}
+			else if(traversal->Z >= Z && traversal->left != nullptr)
+			// if X is smaller or equal send to left subtree
+			// the build is biased towards left subtree in case X are equal
+			// thus search also has the same bias to find the coordinate 
+			{
+				std::cout << "Search Marker 2(2) : Node Not Found" << std::endl; // Debugging marker
+				
+				return false;
+			}
+			else
+			// if X is greater than then send to right subtree
+			{
+				std::cout << "Search Marker 3(2) : Going right" << std::endl; // Debugging marker
+				
+				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+				
+				traversal = traversal->right;
+			}
+		}
+		
+		
+		while_counter++;
+	}
+	
+	
+	std::cout << "Search Marker 2(3) : Node Not Found" << std::endl; // Debugging marker
+	
+	return false; // if the control falls out of the loop then the point is possibly not there
+}
 
 
+void KDTree::recursiveDFT(std::shared_ptr<KDNode> traversal)
+{
+	std::cout << "{ " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "}" << std::endl;
+	
+	if(traversal->left != nullptr)
+	{
+		std::cout << "Left Node : ";
+		
+		recursiveDFT(traversal->left);
+	}
+	
+	if(traversal->right != nullptr)
+	{
+		std::cout << "Right Node : ";
+		
+		recursiveDFT(traversal->right);
+	}
+}
 
 
 
