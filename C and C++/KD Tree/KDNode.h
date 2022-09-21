@@ -1,32 +1,25 @@
 
+#include <memory>
 
-#include <vector>
 
 class KDNode
 {
-	std::vector<int> CoOrdinates;
-	
-	KDNode* left;
-	
-	KDNode* right;
 
 public:
-	
-	KDNode();
-	
-	KDNode(std::vector<int> CoOrdinates);
+
+	KDNode(int X, int Y, int Z);
 	
 	~KDNode();
+
+	std::shared_ptr<KDNode> CreateNewNode(int X, int Y, int Z);
+
+	int X;
+	int Y;
+	int Z;
 	
-	void AssignLeftPointer(KDNode* left);
+	std::shared_ptr<KDNode> left;
 	
-	void AssignRightPointer(KDNode* right);
-	
-	KDNode* GetLeftPointer();
-	
-	KDNode* GetRightPointer();
-	
-	std::vector<int> GetCoOrd();
+	std::shared_ptr<KDNode> right;
 	
 };
 

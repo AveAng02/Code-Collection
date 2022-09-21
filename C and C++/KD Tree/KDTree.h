@@ -1,12 +1,15 @@
 
 
 #include <iostream>
+#include <vector>
 
-#include "KDNode.cpp"
+
+#include "KDNode.h"
 
 
 class KDTree
 {
+	
 public:
 
 	KDTree();
@@ -21,9 +24,7 @@ public:
 	
 private:
 	
-	KDNode* root;
-	
-	KDNode* NewNode(std::vector<int> coord);
+	std::shared_ptr<KDNode> root;
 	
 	std::vector<std::vector<int>> CoOrdinateList;
 };

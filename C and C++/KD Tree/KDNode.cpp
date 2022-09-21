@@ -2,70 +2,40 @@
 #include "KDNode.h"
 	
 	
-	KDNode::KDNode()
-	// For creating a default 2D node
-	{
-		CoOrdinates = {0,0};
+KDNode::KDNode(int X = 0, int Y = 0, int Z = 0)
+// For creating a node at a custom point
+{
+	this->X = X;
+	this->Y = Y;
+	this->Z = Z;
 		
-		left = nullptr;
+	left = nullptr;
 		
-		right = nullptr;
-	}
+	right = nullptr;
+}
 	
 	
 	
-	KDNode::KDNode(std::vector<int> CoOrdinates)
-	// For creating a n-d node
-	{
-		this->CoOrdinates = CoOrdinates;
+KDNode::~KDNode()
+{
 		
-		left = nullptr;
-		
-		right = nullptr;
-	}
-	
-	
-	
-	KDNode::~KDNode()
-	{
-		CoOrdinates.clear();
-		CoOrdinates.shrink_to_fit();
-	}
+}
 
 
 
-	void KDNode::AssignLeftPointer(KDNode* left)
-	{
-		this->left = left;
-	}
+std::shared_ptr<KDNode> KDNode::CreateNewNode(int X = 0, int Y = 0, int Z = 0)
+{
+	std::shared_ptr<KDNode> leaf(new KDNode());
 	
+	leaf->X = X;
+	leaf->Y = Y;
+	leaf->Z = Z;
 	
+	leaf->left = nullptr;
+	leaf->right = nullptr;
 	
-	void KDNode::AssignRightPointer(KDNode* right)
-	{
-		this->right = right;
-	}
-	
-	
-	
-	KDNode* KDNode::GetLeftPointer()
-	{
-		return left;
-	}
-	
-	
-	
-	KDNode* KDNode::GetRightPointer()
-	{
-		return right;
-	}
-	
-	
-	std::vector<int> KDNode::GetCoOrd()
-	{
-		return CoOrdinates;
-	}
-	
+	return leaf;
+}
 	
 	
 	
