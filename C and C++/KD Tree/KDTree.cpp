@@ -1,4 +1,7 @@
 
+// Debugging macro
+// #define DEBUGGING_CONFIG
+
 #include "KDTree.h"
 
 
@@ -28,9 +31,12 @@
 
 	bool KDTree::build()
 	{
+
+#ifdef DEBUGGING_CONFIG
 		std::cout << "Marker 0 : Starting Build" << std::endl; // Debugging marker
 		
 		std::cout << "Creating Root Node with Coordinates : " << CoOrdinateList[0][0] << " " << CoOrdinateList[0][1] << " " << CoOrdinateList[0][2] << std::endl; // Debugging Marker
+#endif
 		
 		root = root->CreateNewNode(CoOrdinateList[0][0], CoOrdinateList[0][1], CoOrdinateList[0][2]);
 		
@@ -44,7 +50,9 @@
 		{
 			// push in the coordinates inside this for loop
 			
+#ifdef DEBUGGING_CONFIG
 			std::cout << "Marker 1 : Initializing all the values." << std::endl; // Debugging Marker
+#endif
 			
 			dimen_tracker = 0; // track of the dimention to be compared against
 			
@@ -69,8 +77,9 @@
 				* 5. In case the dimentions are equal then give precidence to left pointer
 				*/
 				
-				
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Marker 2 : Entering While loop " << while_counter + 1 << std::endl; // Debugging Marker
+#endif
 				
 				// dimen_tracker is assigned the dimention we will check against
 				// it iterates through all the position values from 0 to k which signifies the dimentions here
@@ -83,7 +92,9 @@
 				NodesCoOrd.push_back(hook->Y);
 				NodesCoOrd.push_back(hook->Z);
 				
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Comparison Node : { " << NodesCoOrd[0] << ", " << NodesCoOrd[1] << ", " << NodesCoOrd[2] << "} " << std::endl;
+#endif
 				
 				// comparison if blocks to check which direction to send the coordinate to
 				if(NodesCoOrd[dimen_tracker] > CoOrdinateList[counter][dimen_tracker])
@@ -95,16 +106,21 @@
 						// a new node is created by calling the NewNode function and is sent to create the left branch
 						hook->left = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
 						
+#ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(1) : Going left at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
 						std::cout << "Marker 3 (1): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+#endif
 						
 						break;
 					}
 					else
 					// if the left node is occupid then move on with by replacing hook with this new node
 					{
+
+#ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(1) : Going left at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
+#endif
 						
 						hook = hook->left;
 					}
@@ -118,16 +134,20 @@
 						// a new node is created by calling the NewNode function and is sent to create the Right branch
 						hook->right = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
 						
+#ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(2) : Going right @ at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
 						std::cout << "Marker 3 (2): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+#endif
 						
 						break;
 					}
 					else
 					// if the Right node is occupid then move on with by replacing hook with this new node
 					{
+#ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(2) : Going right  # at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
+#endif
 						
 						hook = hook->right;
 					}
@@ -148,9 +168,11 @@
 					{
 						hook->right = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
 						
+#ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(2) : Going right $ at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
 						std::cout << "Marker 3 (4): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+#endif
 						
 						break;
 					}
@@ -158,9 +180,11 @@
 					{
 						hook->left = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
 						
+#ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(1) : Going left  at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
 						std::cout << "Marker 3 (3): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+#endif
 						
 						break;
 					}
@@ -226,13 +250,17 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 	
 	int dimen_tracker = 0; // tracks which dimention the nodes will be checked against
 	
+#ifdef DEBUGGING_CONFIG
 	std::cout << "Search Marker 1 : Starting Search" << std::endl; // Debugging marker
+#endif
 	
 	while(traversal != nullptr)
 	{
 		dimen_tracker = while_counter % NUMDIMEN; 
 		
+#ifdef DEBUGGING_CONFIG
 		std::cout << "Checking against : { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+#endif
 		
 		if(dimen_tracker == 0)
 		{
@@ -240,7 +268,9 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			if(traversal->X == X && traversal->Y == Y && traversal->Z == Z)
 			// check if the required coordinate is at root
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 2(1) : Node Found" << std::endl; // Debugging marker
+#endif
 				
 				return true;
 			}
@@ -249,9 +279,11 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			// the build is biased towards left subtree in case X are equal
 			// thus search also has the same bias to find the coordinate 
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 3(1) : Going Left" << std::endl; // Debugging marker
 				
 				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+#endif
 				
 				traversal = traversal->left;
 			}
@@ -260,16 +292,20 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			// the build is biased towards left subtree in case X are equal
 			// thus search also has the same bias to find the coordinate 
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 2(2) : Node Not Found" << std::endl; // Debugging marker
+#endif
 				
 				return false;
 			}
 			else
 			// if X is greater than then send to right subtree
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 3(2) : Going right" << std::endl; // Debugging marker
 				
 				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+#endif
 				
 				traversal = traversal->right;
 			}
@@ -280,7 +316,9 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			if(traversal->X == X && traversal->Y == Y && traversal->Z == Z)
 			// check if the required coordinate is at root
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 2(1) : Node Found" << std::endl; // Debugging marker
+#endif
 				
 				return true;
 			}
@@ -289,9 +327,11 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			// the build is biased towards left subtree in case X are equal
 			// thus search also has the same bias to find the coordinate 
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 3(1) : Going Left" << std::endl; // Debugging marker
 				
 				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+#endif
 				
 				traversal = traversal->left;
 			}
@@ -300,16 +340,20 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			// the build is biased towards left subtree in case X are equal
 			// thus search also has the same bias to find the coordinate 
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 2(2) : Node Not Found" << std::endl; // Debugging marker
+#endif
 				
 				return false;
 			}
 			else
 			// if X is greater than then send to right subtree
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 3(2) : Going right" << std::endl; // Debugging marker
 				
 				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+#endif
 				
 				traversal = traversal->right;
 			}
@@ -321,7 +365,9 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			if(traversal->X == X && traversal->Y == Y && traversal->Z == Z)
 			// check if the required coordinate is at root
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 2(1) : Node Found" << std::endl; // Debugging marker
+#endif
 				
 				return true;
 			}
@@ -330,9 +376,11 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			// the build is biased towards left subtree in case X are equal
 			// thus search also has the same bias to find the coordinate 
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 3(1) : Going Left" << std::endl; // Debugging marker
 				
 				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
+#endif
 				
 				traversal = traversal->left;
 			}
@@ -341,17 +389,21 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 			// the build is biased towards left subtree in case X are equal
 			// thus search also has the same bias to find the coordinate 
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 2(2) : Node Not Found" << std::endl; // Debugging marker
+#endif
 				
 				return false;
 			}
 			else
 			// if X is greater than then send to right subtree
 			{
+#ifdef DEBUGGING_CONFIG
 				std::cout << "Search Marker 3(2) : Going right" << std::endl; // Debugging marker
 				
 				std::cout << " { " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "} " << std::endl;
-				
+#endif
+			
 				traversal = traversal->right;
 			}
 		}
@@ -360,8 +412,9 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 		while_counter++;
 	}
 	
-	
+#ifdef DEBUGGING_CONFIG
 	std::cout << "Search Marker 2(3) : Node Not Found" << std::endl; // Debugging marker
+#endif
 	
 	return false; // if the control falls out of the loop then the point is possibly not there
 }
