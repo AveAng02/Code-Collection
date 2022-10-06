@@ -5,26 +5,6 @@
 #include "KDTree.h"
 
 
-	KDTree::KDTree()
-	{
-		this->root = nullptr;
-	}
-
-
-	KDTree::KDTree(std::vector<std::vector<int>> CoOrdinateList)
-	// Custom constructor to make a tree with a particular coordinate list
-	{
-		this->CoOrdinateList = CoOrdinateList;
-		
-		this->root = nullptr;
-	}
-
-
-	KDTree::~KDTree()
-	// KD tree destructor to remove the CoOrdinateList and the KDTree from memory
-	{
-		
-	}
 
 
 	// balance the KDTree while building 	
@@ -32,13 +12,15 @@
 	bool KDTree::build()
 	{
 
+		int c = 0;
+		
 #ifdef DEBUGGING_CONFIG
 		std::cout << "Marker 0 : Starting Build" << std::endl; // Debugging marker
 		
-		std::cout << "Creating Root Node with Coordinates : " << CoOrdinateList[0][0] << " " << CoOrdinateList[0][1] << " " << CoOrdinateList[0][2] << std::endl; // Debugging Marker
+		std::cout << "Creating Root Node with Coordinates : " << CoOrdinateList[0] << " " << CoOrdinateList[1] << " " << CoOrdinateList[2] << std::endl; // Debugging Marker
 #endif
 		
-		root = root->CreateNewNode(CoOrdinateList[0][0], CoOrdinateList[0][1], CoOrdinateList[0][2]);
+		root = root->CreateNewNode(CoOrdinateList[0], CoOrdinateList[1], CoOrdinateList[2]);
 		
 		std::shared_ptr<KDNode> hook = root;
 		
@@ -46,7 +28,7 @@
 		
 		// NumberOfDimen = CoOrdinateList[i].size();
 		
-		for(int while_counter = 1, dimen_tracker = 0, counter = 1; counter < CoOrdinateList.size(); counter++)
+		for(int while_counter = 1, dimen_tracker = 0, counter = 1; counter < CoOrdinateList.size(); counter += 3)
 		{
 			// push in the coordinates inside this for loop
 			
@@ -97,19 +79,20 @@
 #endif
 				
 				// comparison if blocks to check which direction to send the coordinate to
-				if(NodesCoOrd[dimen_tracker] > CoOrdinateList[counter][dimen_tracker])
+				if(NodesCoOrd[dimen_tracker] > CoOrdinateList[counter + dimen_tracker])
 				// less than check leading to the left 
 				{
 					if(hook->left == nullptr)
 					// if the left node is unoccupid then create a new node
 					{
 						// a new node is created by calling the NewNode function and is sent to create the left branch
-						hook->left = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
+						hook->left = hook->CreateNewNode(CoOrdinateList[counter], CoOrdinateList[counter + 1], CoOrdinateList[counter + 2]);
+						c++;
 						
 #ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(1) : Going left at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
-						std::cout << "Marker 3 (1): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+						std::cout << "Marker 3 (1): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter] << " " << CoOrdinateList[counter + 1] << " " << CoOrdinateList[counter + 2] << std::endl; // Debugging Marker
 #endif
 						
 						break;
@@ -125,19 +108,20 @@
 						hook = hook->left;
 					}
 				}
-				else if(NodesCoOrd[dimen_tracker] < CoOrdinateList[counter][dimen_tracker])
+				else if(NodesCoOrd[dimen_tracker] < CoOrdinateList[counter + dimen_tracker])
 				// Greater than checks leading to the right
 				{
 					if(hook->right == nullptr)
 					// if the Right node is unoccupid then create a new node
 					{
 						// a new node is created by calling the NewNode function and is sent to create the Right branch
-						hook->right = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
+						hook->right = hook->CreateNewNode(CoOrdinateList[counter], CoOrdinateList[counter + 1], CoOrdinateList[counter + 2]);
+						c++;
 						
 #ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(2) : Going right @ at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
-						std::cout << "Marker 3 (2): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+						std::cout << "Marker 3 (2): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter] << " " << CoOrdinateList[counter + 1] << " " << CoOrdinateList[counter + 2] << std::endl; // Debugging Marker
 #endif
 						
 						break;
@@ -166,24 +150,26 @@
 					*/
 					if(hook->right == nullptr)
 					{
-						hook->right = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
+						hook->right = hook->CreateNewNode(CoOrdinateList[counter], CoOrdinateList[counter + 1], CoOrdinateList[counter + 2]);
+						c++;
 						
 #ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(2) : Going right $ at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
-						std::cout << "Marker 3 (4): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+						std::cout << "Marker 3 (4): Creating a Node on the right subtree with Coordinates : " << CoOrdinateList[counter] << " " << CoOrdinateList[counter + 1] << " " << CoOrdinateList[counter + 2] << std::endl; // Debugging Marker
 #endif
 						
 						break;
 					}
 					else
 					{
-						hook->left = hook->CreateNewNode(CoOrdinateList[counter][0], CoOrdinateList[counter][1], CoOrdinateList[counter][2]);
+						hook->left = hook->CreateNewNode(CoOrdinateList[counter], CoOrdinateList[counter + 1], CoOrdinateList[counter + 2]);
+						c++;
 						
 #ifdef DEBUGGING_CONFIG
 						std::cout << "Marker 4(1) : Going left  at { " << hook->X << ", " << hook->Y << ", " << hook->Z << "} " << std::endl; // Debugging Marker
 						
-						std::cout << "Marker 3 (3): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter][0] << " " << CoOrdinateList[counter][1] << " " << CoOrdinateList[counter][2] << std::endl; // Debugging Marker
+						std::cout << "Marker 3 (3): Creating a Node on the left subtree with Coordinates : " << CoOrdinateList[counter] << " " << CoOrdinateList[counter + 1] << " " << CoOrdinateList[counter + 2] << std::endl; // Debugging Marker
 #endif
 						
 						break;
@@ -196,6 +182,7 @@
 			
 		}
 		
+		std::cout << "Number of nodes created from build function : " << c << std::endl;
 		
 		return true;
 	}
@@ -208,23 +195,6 @@
 	*	> DFS
 	*/
 	
-	
-	void KDTree::DFT()
-	{
-		if(root == nullptr)
-		{
-			std::cout << "\nTree not built yet.\n" << std::endl;
-			
-			return;
-		}
-		
-		std::cout << "\nRoot : ";
-		
-		recursiveDFT(root);
-		
-		std::cout << std::endl;
-	}
-
 
 	bool KDTree::intersects()
 	{
@@ -420,23 +390,42 @@ bool KDTree::searchCoord(int X, int Y, int Z)
 }
 
 
-void KDTree::recursiveDFT(std::shared_ptr<KDNode> traversal)
+void KDTree::recursiveDFT(std::shared_ptr<KDNode> traversal, int &c)
 {
 	std::cout << "{ " << traversal->X << ", " << traversal->Y << ", " << traversal->Z << "}" << std::endl;
+	c++;
 	
 	if(traversal->left != nullptr)
 	{
 		std::cout << "Left Node : ";
 		
-		recursiveDFT(traversal->left);
+		recursiveDFT(traversal->left, c);
 	}
 	
 	if(traversal->right != nullptr)
 	{
 		std::cout << "Right Node : ";
 		
-		recursiveDFT(traversal->right);
+		recursiveDFT(traversal->right, c);
 	}
+}
+
+
+
+void KDTree::DFT(int &c)
+{
+	if(root == nullptr)
+	{
+		std::cout << "\nTree not built yet.\n" << std::endl;
+			
+		return;
+	}
+		
+	std::cout << "\nRoot : ";
+		
+	recursiveDFT(root, c);
+		
+	std::cout << std::endl;
 }
 
 
