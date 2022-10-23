@@ -35,7 +35,7 @@ namespace ayan
 		string_manip& operator=(const char* c);
 		
 		// io stream
-		string_manip& operator<<(std::ostream&, const string_manip&);
+		friend std::ostream& operator<<(std::ostream&, const string_manip&);
 		
 		// operator>>
 		// strcpy

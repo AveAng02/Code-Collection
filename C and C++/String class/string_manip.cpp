@@ -33,13 +33,25 @@ namespace ayan
 		return *this;
 	}
 	
-	string_manip& operator<<(std::ostream&, const string_manip&)
+	std::ostream& operator<<(std::ostream& os, const string_manip& passed_str)
 	{
-		while(&str != '\0')
+		int i = 0;
+		
+		while(passed_str.str[i] != '\0')
 		{
-			os << &str;
+			os << passed_str.str[i];
+			i++;
+		}
+		
+		/*
+		while(*str != '\0')
+		{
+			os << str;
 			str += 4;
 		}
+		*/
+		
+		return os;
 	}
 }	
 	
