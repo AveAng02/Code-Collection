@@ -1,6 +1,6 @@
 
-// Debugging macro
-// #define DEBUGGING_CONFIG
+
+// #define DEBUGGING_CONFIG // Debugging macro
 
 #include "KDTree.h"
 
