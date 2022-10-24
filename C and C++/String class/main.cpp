@@ -6,7 +6,7 @@
 
 int main()
 {
-	ayan::string_manip a = "AYAN";
+	ayan::string_manip str("AYAN");
 	
 	//a = "Ayan";
 	
