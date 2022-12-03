@@ -56,7 +56,7 @@ public :
 	{
 		for(int i = 0; i < bufferLen_; i++)
 		{
-			std::cout << "[ ";
+			std::cout << "[ " << i << " : ";
 			
 			for(T n : buffer[i])
 			{
@@ -89,7 +89,7 @@ protected :
 		return 0;
 	}
 	
-	bool collisionDetection(int key)
+	bool collisionResolution(int &index)
 	{
 		
 	}
