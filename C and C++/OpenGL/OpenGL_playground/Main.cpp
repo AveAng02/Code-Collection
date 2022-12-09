@@ -3,10 +3,12 @@
 #include<chrono>
 #include<thread>
 
-
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 
+
+#define HEIGHT 1000
+#define WIDTH 750
 
 
 const char* vertexShaderSource = "#version 330 core\n"
@@ -45,7 +47,7 @@ int main()
 	};
 
 
-	GLFWwindow* window1 = glfwCreateWindow(720, 480, "OpenGL Playground", NULL, NULL);
+	GLFWwindow* window1 = glfwCreateWindow(HEIGHT, WIDTH, "OpenGL Playground", NULL, NULL);
 
 	if (window1 == NULL)
 	{
@@ -59,7 +61,7 @@ int main()
 
 	gladLoadGL();
 
-	glViewport(0, 0, 720, 480);
+	glViewport(0, 0, HEIGHT, WIDTH);
 
 
 	////////////////////////////////////// Shader Work /////////////////////////////
@@ -110,14 +112,14 @@ int main()
 
 
 
-	glClearColor(0.225f, 0.0f, 0.0f, 1.0f); // specify the color the background
+	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // specify the color the background
 	glClear(GL_COLOR_BUFFER_BIT); // clean the back buffer and assign new color to it
 	glfwSwapBuffers(window1); // swap the back and front buffers
 
 
 	while (!glfwWindowShouldClose(window1)) // infinite loop to keep the window open until close button is pressed
 	{
-		glClearColor(0.225f, 0.0f, 0.0f, 1.0f); // specify the color the background
+		glClearColor(1.0f, 0.5f, 0.0f, 1.0f); // specify the color the background
 		glClear(GL_COLOR_BUFFER_BIT); // clean the back buffer and assign new color to it
 
 		glUseProgram(shaderProgram);

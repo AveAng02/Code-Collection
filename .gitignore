@@ -1,5 +1,17 @@
+*.exe
+*.pdb
+*.vs
+
+
+C and C++/WXWID_Practice and test ground/WX_AYAN/Debug/.vs
+C and C++/WXWID_Practice and test ground/WX_AYAN/Debug/x64
+C and C++/WXWID_Practice and test ground/WX_AYAN/Debug/.exe
+C and C++/WXWID_Practice and test ground/WX_AYAN/Debug/.pdb
+
 C and C++/OpenGL/OpenGL_playground/.vs
 C and C++/OpenGL/OpenGL_playground/x64
+C and C++/OpenGL/OpenGL_playground/.exe
+C and C++/OpenGL/OpenGL_playground/.pdb
 
 
 C and C++/bstlib/.vs
