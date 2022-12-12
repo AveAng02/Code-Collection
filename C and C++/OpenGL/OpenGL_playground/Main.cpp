@@ -1,14 +1,14 @@
 
 #include<iostream>
-#include<chrono>
-#include<thread>
+// #include<chrono>
+// #include<thread>
 
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 
 
-#define HEIGHT 1000
-#define WIDTH 750
+#define HEIGHT 800
+#define WIDTH 800
 
 
 const char* vertexShaderSource = "#version 330 core\n"
@@ -39,17 +39,10 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // accessing glfw core profiles only 
 
 
-	GLfloat vertices[] =
-	{
-		-0.5f, -0.5f, 0.0f, // left corner
-		0.5f, -0.5f, 0.0f, // right corner
-		0.0f, 0.5f, 0.0f // top corner
-	};
-
 
 	GLFWwindow* window1 = glfwCreateWindow(HEIGHT, WIDTH, "OpenGL Playground", NULL, NULL);
 
-	if (window1 == NULL)
+	if (window1 == NULL) // checking if the window couldn't be created
 	{
 		std::cout << "Falied to create new window." << std::endl;
 		glfwTerminate(); // terminating glfw
@@ -93,12 +86,23 @@ int main()
 	glDeleteShader(fragmentShader);
 	///////////////////////////////////////////////////////////////////////////////
 
+	GLfloat vertices[] =
+	{
+		0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,
+		0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f,
+		-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f // Lower left corner
+		 // Lower right corner
+		 // Upper corner
+	};
+
 
 	GLuint VAO, VBO;
 
+	// generate VAO and VBO with only only one object each
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
+	// Make the VAO the current Vertex Array Object by binding it
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -110,8 +114,6 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-
-
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // specify the color the background
 	glClear(GL_COLOR_BUFFER_BIT); // clean the back buffer and assign new color to it
 	glfwSwapBuffers(window1); // swap the back and front buffers
@@ -119,13 +121,13 @@ int main()
 
 	while (!glfwWindowShouldClose(window1)) // infinite loop to keep the window open until close button is pressed
 	{
-		glClearColor(1.0f, 0.5f, 0.0f, 1.0f); // specify the color the background
+		glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // specify the color the background
 		glClear(GL_COLOR_BUFFER_BIT); // clean the back buffer and assign new color to it
 
 		glUseProgram(shaderProgram);
 
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 3); // Drawing the triangle
 
 		glfwSwapBuffers(window1); // swap the back and front buffers
 
