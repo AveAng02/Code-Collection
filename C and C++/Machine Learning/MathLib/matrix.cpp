@@ -1,12 +1,7 @@
-#pragma once
 
-#include <iostream> // remove when testing is done
-#include <string>
-#include <vector>
 
-// macros
-#define IDENTITY "IDENTITY MATRIX"
-#define SQUARE "SQUARE MATRIX"
+#include "matrix.h"
+
 
 namespace MathLib
 {
@@ -33,21 +28,9 @@ namespace MathLib
 	* Eigen values
 	*/
 	
-	struct Matrix
-	{
-		std::vector<float> mat;
-		
-		int rowLength, columnLength;
-		
-		float determinant;
-		
-		std::vector<float> eigenValues;
-		
-		std::string lable; 
-		
 		
 		// Constructors
-		Matrix(int len = 3, std::string lable_ = IDENTITY) // default constructor
+		Matrix::Matrix(int len = 3, std::string lable_ = IDENTITY) // default constructor
 		{
 			this->rowLength = this->columnLength = len;
 			
@@ -71,7 +54,7 @@ namespace MathLib
 			eigenValues = this->EigenValue();
 		}
 		
-		Matrix(int row, int col, std::string lable_ = "") // default constructor
+		Matrix::Matrix(int row, int col, std::string lable_ = "") // default constructor
 		{
 			this->rowLength = row;
 			this->columnLength = col;
@@ -84,7 +67,7 @@ namespace MathLib
 			}
 		}
 		
-		Matrix(std::vector<float> mat_, int row, int column, std::string lable_ = "") 
+		Matrix::Matrix(std::vector<float> mat_, int row, int column, std::string lable_ = "") 
 		{
 			this->mat = mat_;
 			this->rowLength = row;
@@ -92,7 +75,7 @@ namespace MathLib
 			this->lable = lable_;
 		}
 		
-		Matrix(std::vector<std::vector<float>> mat_, int row, int column, std::string lable_ = "") 
+		Matrix::Matrix(std::vector<std::vector<float>> mat_, int row, int column, std::string lable_ = "") 
 		{
 			this->rowLength = row;
 			this->columnLength = column;
@@ -107,7 +90,7 @@ namespace MathLib
 			}
 		}
 		
-		Matrix(float* mat_[], int row, int column, std::string lable_ = "")
+		Matrix::Matrix(float* mat_[], int row, int column, std::string lable_ = "")
 		{
 			this->rowLength = row;
 			this->columnLength = column;
@@ -122,7 +105,7 @@ namespace MathLib
 			}
 		}
 		
-		Matrix(float mat_[], int row, int column, std::string lable_ = "")
+		Matrix::Matrix(float mat_[], int row, int column, std::string lable_ = "")
 		{
 			this->rowLength = row;
 			this->columnLength = column;
@@ -135,7 +118,7 @@ namespace MathLib
 		}
 		
 		// copy constructor
-		Matrix(const Matrix& passedMat) 
+		Matrix::Matrix(const Matrix& passedMat) 
 		{
 			this->mat = passedMat.mat;
 			this->rowLength = passedMat.rowLength;
@@ -146,7 +129,7 @@ namespace MathLib
 		
 		// Defining Operators
 		// ASSIGNMENT OPERATOR
-		Matrix& operator=(const Matrix& mat_) 
+		Matrix::Matrix& operator=(const Matrix& mat_) 
 		{
 			this->mat = mat_.mat;
 			this->lable = mat_.lable;
@@ -156,7 +139,7 @@ namespace MathLib
 		}
 		
 		// MULTIPLICATION BY CONSTANT
-		Matrix& operator*(const float val) 
+		Matrix::Matrix& operator*(const float val) 
 		{
 			for(int c = 0; c < this->rowLength * this->columnLength; c++)
 			{
@@ -167,7 +150,7 @@ namespace MathLib
 		}
 		
 		// DIVISION BY CONSTANT
-		Matrix& operator/(const float val) 
+		Matrix::Matrix& operator/(const float val) 
 		{
 			for(int c = 0; c < this->rowLength * this->columnLength; c++)
 			{
@@ -178,9 +161,8 @@ namespace MathLib
 		}
 		
 		
-		
 		// CALCULATING EIGEN VALUES
-		std::vector<float> EigenValue() 
+		std::vector<float> Matrix::EigenValue() 
 		{
 			Matrix newMat = upperTriangularMatrix(mat) ;
 			
@@ -193,8 +175,7 @@ namespace MathLib
 			
 			return upper;
 		}
-		
-	};
+
 	
 	//Operators Overloading
 	Matrix operator+(const Matrix& mat1, const Matrix& mat2) // ADDITION
