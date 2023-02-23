@@ -1,0 +1,2 @@
+/usr/bin/ar qc libNathlib.a CMakeFiles/Nathlib.dir/sqrtFunc.cxx.o
+/usr/bin/ranlib libNathlib.a
