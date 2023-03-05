@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/proj1.dir/main.cxx.o -o proj1  Mathlib/libMathlib.a 

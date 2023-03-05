@@ -1,0 +1,2 @@
+/usr/bin/ar qc libMathlib.a CMakeFiles/Mathlib.dir/sqrtFunc.cxx.o
+/usr/bin/ranlib libMathlib.a

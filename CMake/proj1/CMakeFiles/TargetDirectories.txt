@@ -1,0 +1,6 @@
+/home/ayan/Documents/Code-Collection/CMake/proj1/CMakeFiles/proj1.dir
+/home/ayan/Documents/Code-Collection/CMake/proj1/CMakeFiles/edit_cache.dir
+/home/ayan/Documents/Code-Collection/CMake/proj1/CMakeFiles/rebuild_cache.dir
+/home/ayan/Documents/Code-Collection/CMake/proj1/Mathlib/CMakeFiles/Mathlib.dir
+/home/ayan/Documents/Code-Collection/CMake/proj1/Mathlib/CMakeFiles/edit_cache.dir
+/home/ayan/Documents/Code-Collection/CMake/proj1/Mathlib/CMakeFiles/rebuild_cache.dir
