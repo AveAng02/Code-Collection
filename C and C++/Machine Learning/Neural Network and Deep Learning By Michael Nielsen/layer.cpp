@@ -1,0 +1,31 @@
+
+
+
+
+
+namespace CodeBrain
+{
+	class Layer
+	{
+		
+	};
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

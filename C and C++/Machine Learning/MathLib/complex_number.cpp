@@ -9,6 +9,8 @@ namespace MathLib
 	{
 		double real;
 		double complex;
+		
+		
 	};
 }
 

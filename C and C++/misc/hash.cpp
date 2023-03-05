@@ -91,7 +91,7 @@ protected :
 	
 	bool collisionResolution(int &index)
 	{
-		
+		if
 	}
 };
 
