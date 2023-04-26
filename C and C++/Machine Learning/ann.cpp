@@ -5,43 +5,46 @@
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 // node
-class Node
+class Neuron
 {
 public:
 
-    Node()
+    Neuron()
     {
         bias = 0.0;
         weight.push_back(0.0);
 
         // generating a random tag to uniquely recognize a neuron
-	    tag = 10000000 + std::rand() / (RAND_MAX / 99999999);
+	    neuronID = 10000000 + std::rand() / (RAND_MAX / 99999999);
     }
 
-    Node(std::vector<float> weight_, float bias_)
+    Neuron(std::vector<float> weight_, float bias_)
     {
         weight = weight_;
         bias = bias_;
 
         // generating a random tag to uniquely recognize a neuron
-	    tag = 10000000 + std::rand() / (RAND_MAX / 99999999);
+	    neuronID = 10000000 + std::rand() / (RAND_MAX / 99999999);
     }
 
     float compute_output(std::vector<float> input);
     void set_node(std::vector<float> weight_, float bias_);
-    float get_neuron_val();
-    void set_neuron_val(float val);
+    std::vector<float> get_weight();
+    void set_weight(std::vector<float> val);
+    float get_bias();
+    void set_bias(float bias_);
     void print();
 
 private:
     std::vector<float> weight;
     float bias;
-    int tag;
+    int neuronID;
 };
 
-float Node::compute_output(std::vector<float> input)
+float Neuron::compute_output(std::vector<float> input)
 {
     float output = 0.0;
 
@@ -55,15 +58,15 @@ float Node::compute_output(std::vector<float> input)
     return output;
 }
 
-void Node::set_node(std::vector<float> weight_, float bias_)
+void Neuron::set_node(std::vector<float> weight_, float bias_)
 {
     weight = weight_;
     bias = bias_;
 }
 
-void Node::print()
+void Neuron::print()
 {
-    std::cout << "Neuron Tag : " << tag << std::endl;
+    std::cout << "Neuron Tag : " << neuronID << std::endl;
     std::cout << "Weights : ";
 
     for(int i = 0; i < weight.size(); i++)
@@ -74,9 +77,27 @@ void Node::print()
     std::cout << "\nBias : " << bias << std::endl;
 }
 
+std::vector<float> Neuron::get_weight()
+{
+    return weight;
+}
 
+void Neuron::set_weight(std::vector<float> val)
+{
+    weight = val;
+}
 
+float Neuron::get_bias()
+{
+    return bias;
+}
 
+void Neuron::set_bias(float bias_)
+{
+    bias = bias_;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Layer
 class Layer
@@ -84,32 +105,35 @@ class Layer
 public:
     Layer()
     {
-        Node newNode;
+        Neuron newNode;
         node_list.push_back(newNode);
 
         // generating a random tag to uniquely recognize a neuron
-	    tag = 10000000 + std::rand() / (RAND_MAX / 99999999);
+	    layerID = 10000000 + std::rand() / (RAND_MAX / 99999999);
     }
 
     Layer(int n)
     {
         for(int i = 0; i < n; i++)
         {
-            Node newNode;
+            Neuron newNode;
             node_list.push_back(newNode);
         }
 
         // generating a random tag to uniquely recognize a neuron
-	    tag = 10000000 + std::rand() / (RAND_MAX / 99999999);
+	    layerID = 10000000 + std::rand() / (RAND_MAX / 99999999);
     }
 
     void set_neuron(std::vector<float> weight_, float bias_, int neuron_number);
     std::vector<float> get_layer_output(std::vector<float> input);
     std::vector<float> get_input_layer_output(std::vector<float> input);
 
+
+
 private:
-    std::vector<Node> node_list;
-    int tag;
+    std::vector<Neuron> node_list;
+    float width;
+    int layerID;
 };
 
 void Layer::set_neuron(std::vector<float> weight_, float bias_, int neuron_number)
@@ -141,23 +165,74 @@ std::vector<float> Layer::get_input_layer_output(std::vector<float> input)
     return output;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Network
 class Network
 {
 public:
+    Network()
+    {
+        depth = 3;
+        Layer newLayer;
+        hidden.push_back(newLayer);
+    }
+
+    Network(int n)
+    {
+        // check if n >= 2
+        depth = n;
+
+        for(int i = 0; i < n - 2; i++)
+        {
+            Layer newLayer;
+            hidden.push_back(newLayer);
+        }
+    }
+    /*
+    * Eventually I want to dynamically increase the depth of the network as required.
+    * Also dynamically change the width of a layer as required.
+    */
+
+    void set_input_layer(std::vector<float>);
+
+    // forward propagation
+    std::vector<float> forward_propagation(std::vector<float>);
+
+
+    // back propagatin
+    void back_propagation();
 
 
 private:
-
+    Layer input;
+    Layer output;
+    std::vector<Layer> hidden;
+    int depth; // vizualize what happens when this becomes float
+    int networkID;
 };
 
+void Network::set_input_layer(std::vector<float> feed_forward)
+{
+    input.get_input_layer_output(feed_forward);
+}
+
+std::vector<float> Network::forward_propagation(std::vector<float> feed_forward)
+{   
+    feed_forward = input.get_layer_output(feed_forward);
+
+    for(int i = 0; i < hidden.size(); i++)
+    {
+        feed_forward = hidden[i].get_layer_output(feed_forward);
+    }
+
+    return output.get_layer_output(feed_forward);
+}
 
 
 
 
-
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main()
 {
