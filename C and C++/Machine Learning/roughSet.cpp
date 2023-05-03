@@ -27,11 +27,79 @@ void print_2d_string_vec(std::vector<std::vector<std::string>> data)
     for(int i = 0, j = 0; i < data.size(); i++)
     {
         print_1d_string_vec(data[i]);
-
-        std::cout << "\n";
     }
+
+    std::cout << "\n";
 }
 
+// convert the function to a templated function
+std::vector<std::string> unique(std::vector<std::string> field)
+{
+    std::vector<std::string> unique_elements;
+    std::string val;
+    std::vector<std::string>::iterator itr;
+    
+    for(int i = 1; i < field.size(); i++)
+    {
+        val = field[i];
+        itr = std::find(unique_elements.begin(), unique_elements.end(), val);
+
+        if(itr == unique_elements.end())
+        {
+            // std::cout << *itr << std::endl;
+            unique_elements.push_back(val);
+        }
+        
+    }
+
+    return unique_elements;
+}
+
+// convert the function to a templated function
+std::vector<std::string> subset(std::vector<std::vector<std::string>> data, int line)
+{
+    std::vector<std::string> sub;
+
+    for(int i = 0; i < data.size(); i++)
+    {
+        sub.push_back(data[i][line]);
+    }
+
+    return sub;
+}
+
+
+// convert this to a templated function
+bool equal(std::vector<std::string> a, std::vector<std::string> b)
+{
+    if(a.size() != b.size())
+    {
+        return false;
+    }
+
+    for(int i = 0; i < a.size(); i++)
+    {
+        if(a[i] != b[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+std::vector<std::string> cut_vec(std::vector<std::string> data, int begin, int end)
+{
+    std::vector<std::string> sub_set1;
+
+    for(int i = begin; i < end; i++)
+    {
+        sub_set1.push_back(data[i]);
+    }
+
+    return sub_set1;
+}
 
 
 // Importing required libraries
@@ -65,119 +133,99 @@ std::vector<std::vector<std::string>> load_csv_data(std::string file_name)
 }
 
 
-// convert the function to a templated function
-std::vector<std::string> unique(std::vector<std::string> field)
+
+std::vector<std::vector<std::string>> indiscernibility
+(std::vector<std::vector<std::string>> data, int decision_line)
 {
-    std::vector<std::string> unique_elements;
-    std::string val;
-    std::vector<std::string>::iterator itr;
+    std::vector<std::vector<std::string>> indis;
     
-    for(int i = 1; i < field.size(); i++)
-    {
-        val = field[i];
-        itr = std::find(unique_elements.begin(), unique_elements.end(), val);
-
-        if(itr == unique_elements.end())
-        {
-            // std::cout << *itr << std::endl;
-            unique_elements.push_back(val);
-        }
-        
-    }
-
-    return unique_elements;
-}
-
-
-// Define the lower and upper approximation functions
-std::vector<std::string> lower_approx
-(std::vector<std::vector<std::string>> data, int universe_line,
-std::string decision, int decision_line)
-{
-    std::vector<std::string> lower_set;
+    bool* flag = new bool[data.size()]{false};
 
     for(int i = 0; i < data.size(); i++)
     {
-        if(data[i][decision_line] == decision)
+        if(flag[i] == false)
         {
-            lower_set.push_back(data[i][universe_line]);
+            std::string decision = data[i][decision_line];
+
+            std::vector<std::string> sub_set;
+            
+            for(int j = 0; j < data.size(); j++)
+            {
+                if(data[j][decision_line] == decision && flag[j] == false)
+                {
+                    sub_set.push_back(data[j][0]);
+                    flag[j] = true;
+                }
+            }
+            indis.push_back(sub_set);
+            sub_set.resize(0);
         }
     }
 
-    // std::cout << "Lower Set for " << decision << std::endl;
-    // print_1d_string_vec(lower_set);
-
-    return lower_set;
+    return indis;
 }
 
 
-std::vector<std::string> upper_approx
-(std::vector<std::vector<std::string>> data, 
-int universe_line, std::string decision, int decision_line)
-{
-    std::vector<std::string> upper_set;
 
-    return upper_set;
+std::vector<std::vector<std::string>> complete_indiscernibility
+(std::vector<std::vector<std::string>> data)
+{
+    std::vector<std::vector<std::string>> indis;
+    
+    bool* flag = new bool[data.size()]{false};
+
+    for(int i = 0; i < data.size(); i++)
+    {
+        std::vector<std::string> sub_set1 = cut_vec(data[i], 1, data[i].size());
+
+        std::vector<std::string> sub_set;
+
+        if(flag[i] == false)
+        {
+            for(int j = 0; j < data.size(); j++)
+            {
+                std::vector<std::string> sub_set2 = cut_vec(data[j], 1, data[j].size());
+
+                if(equal(sub_set1, sub_set2))
+                {
+                    sub_set.push_back(data[j][0]);
+                    flag[j] = true;
+                }
+            }
+
+            indis.push_back(sub_set);
+        }
+    }
+
+    return indis;
 }
 
 
-// Define the universe of discourse
-// Define the number of attributes
-// Define the main function to compute rough sets
-// Compute the rough sets for the dataset
-// Print the results
 
-class RoughSet
-{
-public:
-
-private:
-
-};
-
+// generating equivalance classes
 // convert this function to a class
 // this function creates a roughset
 void create_rough_set(std::vector<std::vector<std::string>> data)
 {
-    int attributes = data[0].size(); // stores the number of attributes
+    std::vector<std::vector<std::string>> get_set = indiscernibility(data, 1);
 
-    std::vector<std::string> universe;
-    std::vector<std::string> decision;
+    std::cout << "indiscernibility of field 1 : " << std::endl;
+    print_2d_string_vec(get_set);
 
-    for(int i = 1; i < data.size(); i++)
-    {
-        std::string val;
+    get_set = indiscernibility(data, 2);
 
-        // this block defines the decision 
-        val = data[i][data[0].size() - 1];
-        decision.push_back(val);
+    std::cout << "indiscernibility of field 2 : " << std::endl;
+    print_2d_string_vec(get_set);
 
-        // this block defines the universe
-        val = data[i][0];
-        universe.push_back(val);
-    }
+    get_set = indiscernibility(data, 3);
 
-    universe = unique(universe); // vector only retains the unique elements
-    decision = unique(decision);
+    std::cout << "indiscernibility of field 3 : " << std::endl;
+    print_2d_string_vec(get_set);
 
-    std::vector<std::vector<std::string>> lower_set;
-    std::vector<std::vector<std::string>> upper_set;
+    get_set = complete_indiscernibility(data);
 
-    for(int i = 0; i < decision.size(); i++)
-    {
-        lower_set.push_back(lower_approx(data, 1, decision[i], data[0].size() - 1));
-        upper_set.push_back(lower_approx(data, 1, decision[i], data[0].size() - 1));
-    }
-
-    /*
-    std::cout << "Universe:\n";
-    print_1d_string_vec(universe);
-
-    std::cout << "Decision:\n";
-    print_1d_string_vec(decision);
-    */
-
-
+    std::cout << "indiscernibility of field : " << std::endl;
+    print_2d_string_vec(get_set);
 }
 
 
@@ -188,9 +236,11 @@ int main()
 {
     // add argc arg v in main 
 
-    std::string file_name = "emp_performance.csv";
+    std::string file_name = "data1.csv";
 
     std::vector<std::vector<std::string>> data = load_csv_data(file_name);
+
+    print_2d_string_vec(data);
 
     create_rough_set(data);
 
