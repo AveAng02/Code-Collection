@@ -46,11 +46,45 @@ public:
 
     void pop_back()
     {
-        
+        len--;
+
+        if(len == 0)
+            delete(buffer);
     }
 
-    int resize(const int);
-    int resize(const int, const int);
+    void resize(const int newSz)
+    {
+        T* newBuffer = new T[newSz];
+
+        for(int i = 0; i < len && i < newSz; i++)
+        {
+            newBuffer[i] = buffer[i];
+        }
+
+        delete(buffer);
+        buffer = newBuffer;
+    }
+
+    void resize(const int newSz, const int value)
+    {
+        T* newBuffer = new T[newSz];
+
+        for(int i = 0; i < len && i < newSz; i++)
+        {
+            newBuffer[i] = buffer[i];
+        }
+
+        if(newSz > len)
+        {
+            for(int i = len; i < newSz; i++)
+            {
+                newBuffer[i] = value;
+            }
+        }
+
+        delete(buffer);
+        buffer = newBuffer;
+    }
 
     int size()
     {
