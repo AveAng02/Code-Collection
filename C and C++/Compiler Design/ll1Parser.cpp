@@ -7,48 +7,10 @@
 #include <string>
 #include <map>
 
-void print_1d_string_vec(std::vector<std::string> data)
-{
-    std::cout << "  ";
-
-    for(int i = 0; i < data.size() - 1; i++)
-    {
-        std::cout << data[i] << "\t";
-    }
-
-    std::cout << data[data.size() - 1] << "  \n";
-}
-
-void print_2d_string_vec(std::vector<std::vector<std::string>> data)
-{
-    std::cout << "  ";
-
-    for(int i = 0; i < data.size(); i++)
-    {
-        print_1d_string_vec(data[i]);
-    }
-
-    std::cout << "\n";
-}
-
-std::string trimSpace(std::string str)
-{
-    std::string str1 = "";
-
-    for(int i = 0; i < str.length(); i++)
-    {
-        if(str[i] != ' ')
-        {
-            str1 += str[i];
-        }
-    }
-
-    return str1;
-}
 
 std::vector<char> delimiters = {'(', ')', '{', '}', '[', ']'};
 
-std::vector<char> operators = {'+', '-', '*', '/', '=', '%', '!', '^', '%', '|', ',', ';', '>', '<', '$'};
+std::vector<char> operators = {'+', '-', '*', '/', '=', '%', '!', '^', '%', '|', ',', ';', '>', '<'};
 
 bool is_delimiter(char token_)
 {
@@ -84,32 +46,18 @@ bool is_operator(std::string token_)
     return is_operator(token_[0]);
 }
 
-bool is_in_vec(std::vector<std::string> vec, std::string str)
+std::string trimSpace(std::string str)
 {
-    for(int i = 0; i < vec.size(); i++)
-    {
-        if(vec[i] == str)
-            return true;
-    }
+    if(str.length() == 1 && str[0] != ' ')
+        return str;
 
-    return false;
-}
+    std::string newStr = "";
 
-std::vector<std::string> reduce_vec(std::vector<std::string> vec)
-{
-    std::vector<std::string> vec2;
+    for(int i = 0; i < str.length(); i++)
+        if(str[i] != ' ')
+            newStr += str[i];
 
-    for(int i = 0; i < vec.size(); i++)
-    {
-        // std::cout << vec[i] << "\t" << is_in_vec(vec2, vec[i]) << std::endl;
-
-        if(!is_in_vec(vec2, vec[i]))
-        {
-            vec2.push_back(vec[i]);
-        }
-    }
-
-    return vec2;
+    return newStr;
 }
 
 
@@ -127,108 +75,215 @@ public:
         return *this;
     }
 
+    void addVariables(const std::string);
     bool addProduction(const std::string);
     bool doesAcceptStr(const std::string);
-    void printProductions();
-    void printFirst();
-    void printLast();
+    bool generateParseTable();
+    bool isVariable(const std::string);
+    std::vector<std::vector<std::vector<std::string>>> getProductions();
+    std::vector<std::string> getFirst();
+    std::vector<std::string> getFollow();
+    std::vector<std::string> getVariables();
+    std::vector<std::string> getTerminals();
 
 private:
-    std::map<std::string, std::vector<std::vector<std::string>>> productions;
-    std::map<std::string, std::vector<std::string>> first;
-    std::map<std::string, std::vector<std::string>> follow;
+    void genTerminals();
+    void genFirst();
+    void genFollow();
+
+    std::vector<std::string> variables;
+    std::vector<std::string> terminals;
+    std::vector<std::vector<std::vector<std::string>>> productions;
+    std::vector<std::string> first;
+    std::vector<std::string> follow;
 };
 
 bool grammer::addProduction(const std::string str)
 {
+    std::vector<std::vector<std::string>> newProds;
+    std::vector<std::string> prodList, listitr;
+    std::string temp = "", itr = "";
     int i = 0;
-    std::string variable = "", var2 = "";
-    std::vector<std::string> subVec;
-    std::vector<std::vector<std::string>> prods;
 
+    // Extracting variable from production
     for(i = 0; i < str.length(); i++)
-    {
         if(str[i] == '-')
-        {
-            i += 2;
             break;
-        }
 
-        variable += str[i];
-    }
+    i += 2;
+    ///////////////////////////////////////
 
-    variable = trimSpace(variable);
-
-    if(variable == "")
-        return false;
-
+    // Extracting productions seperated by '|'
     for(; i < str.length(); i++)
     {
         if(str[i] == '|')
         {
-            if(var2 != "" && var2 != " ")
-                subVec.push_back(trimSpace(var2));
-
-            var2 = "";
-
-            // print_1d_string_vec(subVec);
-            prods.push_back(subVec);
-            subVec.clear();
+            prodList.push_back(itr);
+            itr = "";
             continue;
         }
+        itr += str[i];
+    }
+    prodList.push_back(itr);
+    //////////////////////////////////////////
 
-        if(is_operator(str[i]) || is_delimiter(str[i]) || str[i] == ' ')
+    // Extracting tokens from each possible production
+    for(int j = 0, i = 0; i < prodList.size(); i++) // loop to iterate through each production
+    {
+        for(j = 0; j < prodList[i].size(); j++) // loop for the string
         {
-            // if a delimiter or operator is encountered
-            // add the word generated so far and the operator 
-            // or delimiter encountered to the production list
-            if(var2 != "" && var2 != " ")
-                subVec.push_back(trimSpace(var2));
+            if(is_delimiter(prodList[i][j]) || is_operator(prodList[i][j])
+             || isVariable(std::string(1, prodList[i][j])))
+            {
+                if(temp != "") // check to make sure string is not empty
+                    listitr.push_back(temp);
 
-            subVec.push_back(std::string{str[i]});
-            var2 = "";
-            continue;
+                listitr.push_back(std::string(1, prodList[i][j]));
+                temp = "";
+                continue;
+            }
+
+            temp += prodList[i][j];
         }
 
-        var2 += str[i];
+        if(temp != "") // check to make sure string is not empty
+            listitr.push_back(temp);
+
+        newProds.push_back(listitr);
+        listitr.clear();
+        temp = "";
     }
 
-    subVec.push_back(trimSpace(var2));
-    prods.push_back(subVec);
-    subVec.clear();
+    ///////////////////////////////////////////////////
 
-    productions.insert(std::make_pair(variable, prods));
+    productions.push_back(newProds);
 
     return true;
 }
 
-void grammer::printProductions()
+bool grammer::isVariable(const std::string str)
 {
-    for(auto i = productions.begin(); i != productions.end(); i++)
+    for(int i = 0; i < variables.size(); i++)
+        if(variables[i] == str)
+            return true;
+
+    return false;
+}
+
+void grammer::addVariables(const std::string str)
+{
+    int i = 0;
+    std::string var = "";
+
+    // Extracting variable from production
+    for(; i < str.length(); i++)
+        if(str[i] == '-')
+            break;
+
+    var = trimSpace(str.substr(0, i));
+    i += 2;
+    variables.push_back(var);
+    ///////////////////////////////////////
+}
+
+void grammer::genTerminals()
+{
+    for(int i = 0, j = 0, k = 0; k < productions.size(); k++)
     {
-        print_2d_string_vec(i->second);
+        for(j = 0; j < productions[k].size(); j++)
+        {
+            for(i = 0; i < productions[k][j].size(); i++)
+            {
+                if(!isVariable(productions[k][j][i]) &&
+                 !is_delimiter(productions[k][j][i]) &&
+                  !is_operator(productions[k][j][i]))
+                {
+                    std::cout << productions[k][j][i] << std::endl;
+                    terminals.push_back(productions[k][j][i]);
+                }
+            }
+        }
     }
 }
 
-/*
-bool grammer::doesAcceptStr(const std::string);
-void grammer::printProductions();
-void grammer::printFirst();
-void grammer::printLast();
-*/
+bool grammer::generateParseTable()
+{
+    genTerminals();
+    // genFirst();
+    // genFollow();
+    return true;
+}
+
+std::vector<std::vector<std::vector<std::string>>> grammer::getProductions()
+{
+    return productions;
+}
+
+std::vector<std::string> grammer::getVariables()
+{
+    return variables;
+}
+
+std::vector<std::string> grammer::getTerminals()
+{
+    return terminals;
+}
+
+
+void printProductions(grammer newGram)
+{
+    std::vector<std::vector<std::vector<std::string>>> prods = newGram.getProductions();
+    std::vector<std::string> var = newGram.getVariables();
+
+    for(int i = 0; i < var.size(); i++)
+    {
+        std::cout << var[i] << std::endl;
+    }
+
+    for(int j = 0, k = 0, i = 0; i < prods.size(); i++)
+    {
+        std::vector<std::vector<std::string>> temp = prods[i];
+
+        for(k = 0; k < temp.size(); k++)
+        {
+            for(j = 0; j < temp[k].size(); j++)
+            {
+                std::cout << " " << k << " " << j << "\"" << temp[k][j] << "\"";
+            }
+
+            std::cout << " | ";
+        }
+
+        std::cout << "\n";
+    }
+}
+
 
 grammer fileToGrammer(const std::string str)
 {
     grammer newGram;
     std::string newLine;
+    std::vector<std::string> list;
 
     std::ifstream file(str);
 
     while(std::getline(file, newLine))
     {
-        // std::cout << newLine << "\n" << trimSpace(newLine) << std::endl;
+        list.push_back(newLine);
+    }
 
-        if(!newGram.addProduction(trimSpace(newLine)))
+    for(int i = 0; i < list.size(); i++)
+    {
+        newLine = trimSpace(list[i]);
+
+        newGram.addVariables(newLine);
+    }
+
+    for(int i = 0; i < list.size(); i++)
+    {
+        newLine = trimSpace(list[i]);
+
+        if(!newGram.addProduction(newLine))
         {
             // checks if the grammer cannot be parsed
             std::cout << "Error in Grammer." << std::endl;
@@ -238,6 +293,8 @@ grammer fileToGrammer(const std::string str)
 
     return newGram;
 }
+
+
 
 /*
 bool isAmbiguous(grammer objGram)
@@ -253,9 +310,17 @@ grammer removeLeftRecursion(grammer objGram)
 
 int main(int argc, char* argv[])
 {
-    grammer newGram = fileToGrammer(argv[1]);
+    grammer newGram = fileToGrammer("grammer.txt");
 
-    newGram.printProductions();
+    newGram.generateParseTable();
+
+    printProductions(newGram);
+
+    grammer newGram2 = fileToGrammer("grammer2.txt");
+
+    newGram2.generateParseTable();
+
+    printProductions(newGram2);
 
     return 0;
 }
