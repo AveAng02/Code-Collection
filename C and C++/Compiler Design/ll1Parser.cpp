@@ -3,10 +3,17 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include <stack>
 #include <string>
 #include <map>
 
+
+/*
+    DEFINING LANGUAGE
+*/
+
+#define EPSILON (char)949 
 
 std::vector<char> delimiters = {'(', ')', '{', '}', '[', ']'};
 
@@ -45,6 +52,44 @@ bool is_operator(std::string token_)
         
     return is_operator(token_[0]);
 }
+//////////////////////////////////
+
+
+
+/*
+    UTILITY FUNCTIONS 
+*/
+void print_1d_string_vec(std::vector<std::string> data)
+{
+    if(data.empty())
+        return;
+
+    std::cout << "  ";
+
+    for(int i = 0; i < data.size() - 1; i++)
+    {
+        std::cout << data[i] << "\t";
+    }
+
+    std::cout << data[data.size() - 1] << "  \n";
+}
+
+std::vector<std::string> concatVec(std::vector<std::string> token_list1, std::vector<std::string> token_list2)
+{
+    std::vector<std::string> token_list;
+
+    for(int i = 0; i < token_list1.size(); i++)
+    {
+        token_list.push_back(token_list1[i]);
+    }
+
+    for(int i = 0; i < token_list2.size(); i++)
+    {
+        token_list.push_back(token_list2[i]);
+    }
+
+    return token_list;
+}
 
 std::string trimSpace(std::string str)
 {
@@ -54,17 +99,47 @@ std::string trimSpace(std::string str)
     std::string newStr = "";
 
     for(int i = 0; i < str.length(); i++)
-        if(str[i] != ' ')
+        if(str[i] != ' ' && str[i] != 13)
             newStr += str[i];
 
     return newStr;
 }
 
+std::vector<std::string> removeRedundancy(std::vector<std::string> vec)
+{
+    // TODO : use algorithms here to reduce redundancy 
+    // TODO : use iterators and remove extra vector
+    // TODO : convert to templated class and take value by reference
+    std::vector<std::string> vec2;
+    std::vector<std::string>::iterator itr;
+
+    for(int i = 0; i < vec.size(); i++)
+    {
+        itr = std::find(vec2.begin(), vec2.end(), vec[i]);
+
+        if(itr == vec2.end())
+        {
+            vec2.push_back(vec[i]);
+        }
+    }
+
+    return vec2;
+}
+////////////////////////////
+
+
+
+/*
+    DEFINING GRAMMER
+*/
 
 class grammer
 {
 public:
-    grammer() {}
+    grammer()
+    {
+        leftRecursive = false;
+    }
 
     grammer operator=(const grammer& obj)
     {
@@ -75,27 +150,30 @@ public:
         return *this;
     }
 
+    void genTerminals();
+    void genFirst();
+    void genFollow();
     void addVariables(const std::string);
     bool addProduction(const std::string);
     bool doesAcceptStr(const std::string);
     bool generateParseTable();
     bool isVariable(const std::string);
+    bool isTerminal(const std::string);
     std::vector<std::vector<std::vector<std::string>>> getProductions();
-    std::vector<std::string> getFirst();
-    std::vector<std::string> getFollow();
+    std::vector<std::vector<std::string>> getFirst();
+    std::vector<std::vector<std::string>> getFollow();
     std::vector<std::string> getVariables();
     std::vector<std::string> getTerminals();
 
 private:
-    void genTerminals();
-    void genFirst();
-    void genFollow();
+    std::vector<std::string> recursiveFirst(std::vector<std::string>);
 
+    bool leftRecursive;
     std::vector<std::string> variables;
     std::vector<std::string> terminals;
     std::vector<std::vector<std::vector<std::string>>> productions;
-    std::vector<std::string> first;
-    std::vector<std::string> follow;
+    std::vector<std::vector<std::string>> first;
+    std::vector<std::vector<std::string>> follow;
 };
 
 bool grammer::addProduction(const std::string str)
@@ -133,12 +211,14 @@ bool grammer::addProduction(const std::string str)
         for(j = 0; j < prodList[i].size(); j++) // loop for the string
         {
             if(is_delimiter(prodList[i][j]) || is_operator(prodList[i][j])
-             || isVariable(std::string(1, prodList[i][j])))
+             || isVariable(std::string(1, prodList[i][j])) || prodList[i][j] == ' ')
             {
                 if(temp != "") // check to make sure string is not empty
                     listitr.push_back(temp);
 
-                listitr.push_back(std::string(1, prodList[i][j]));
+                if(prodList[i][j] != ' ')
+                    listitr.push_back(std::string(1, prodList[i][j]));
+
                 temp = "";
                 continue;
             }
@@ -165,6 +245,15 @@ bool grammer::isVariable(const std::string str)
 {
     for(int i = 0; i < variables.size(); i++)
         if(variables[i] == str)
+            return true;
+
+    return false;
+}
+
+bool grammer::isTerminal(const std::string str)
+{
+    for(int i = 0; i < terminals.size(); i++)
+        if(terminals[i] == str)
             return true;
 
     return false;
@@ -198,19 +287,168 @@ void grammer::genTerminals()
                  !is_delimiter(productions[k][j][i]) &&
                   !is_operator(productions[k][j][i]))
                 {
-                    std::cout << productions[k][j][i] << std::endl;
-                    terminals.push_back(productions[k][j][i]);
+                    if(productions[k][j][i][0] != 13)
+                    {
+                        terminals.push_back(trimSpace(productions[k][j][i]));
+                    }
                 }
             }
         }
     }
+
+    terminals = removeRedundancy(terminals);
+    terminals.push_back("$");
+
+    /*
+    for(int i = 0; i < terminals.size(); i++)
+    {
+        std::cout << terminals[i] <<  "\t";
+    }
+
+    std::cout << "\n";
+    */
+    
+}
+
+
+void grammer::genFirst()
+{
+    for(int j = 0, i = 0; i < variables.size(); i++)
+    {
+        std::cout << variables[i] << std::endl;
+
+        std::vector<std::string> vec, vec2;
+
+        for(j = 0; j < productions[i].size(); j++)
+        {
+            vec2 = recursiveFirst(productions[i][j]);
+            vec = concatVec(vec, vec2);
+        }
+
+        first.push_back(removeRedundancy(vec));
+        vec.clear();
+        vec2.clear();
+    }
+
+    for(int j = 0, i = 0; i < first.size(); i++)
+    {
+        std::cout << variables[i] << " -> ";
+
+        for(j = 0; j < first[i].size(); j++)
+        {
+            std::cout << first[i][j] << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+/*
+if(isVariable(prods[i]))
+        {
+            // getting the productions for the variable
+            std::vector<std::vector<std::string>> varProds;
+
+            for(int i = 0; i < variables.size(); i++)
+            {
+                if(variables[i] == prods[i])
+                {
+                    varProds = productions[i];
+                    break;
+                }
+            }
+            //////////////////////////////////////////////
+
+            for(int i = 0; i < varProds.size(); i++)
+            {
+                // iterating through each productions and getting their first
+                std::vector<std::string> vec2 = recursiveFirst(varProds[i]);
+                vec = concatVec(vec, vec2);
+                // std::merge(vec.begin(), vec.end(), vec2.begin(), vec2.end(), std::back_inserter(temp));
+            }
+
+            if(std::find(vec.begin(), vec.end(), EPSILON) == vec.end())
+            {
+                // if the first doesnot have a epsilon production then we break out of the loop
+                break;
+            }
+        }
+        */
+
+std::vector<std::string> grammer::recursiveFirst(std::vector<std::string> prods)
+{
+    std::vector<std::string> temp;
+
+    for(int i = 0; i < prods.size(); i++)
+    {
+        std::cout << "Debug : " << prods[i] << std::endl;
+
+        if(isVariable(prods[i]))
+        {
+            bool recursionFlag = false;
+            std::cout << "inside variable : " << prods[i] << std::endl;
+            // getting the productions for the variable
+            std::vector<std::vector<std::string>> varProds;
+            std::string vari;
+
+            for(int i = 0; i < variables.size(); i++)
+            {
+                if(variables[i] == prods[i])
+                {
+                    varProds = productions[i];
+                    vari = variables[i];
+                    break;
+                }
+            }
+            //////////////////////////////////////////////
+
+            std::cout << varProds.size() << std::endl;
+
+            for(int i = 0; i < varProds.size(); i++)
+            {
+                if(vari == varProds[i][0])
+                {
+                    // preventing recursion
+                    leftRecursive = true;
+                    recursionFlag = true;
+                    continue;
+                }
+
+                print_1d_string_vec(varProds[i]);
+                temp = concatVec(temp, recursiveFirst(varProds[i]));
+            }
+
+            if(recursionFlag)
+                continue;
+        }
+
+        if(is_delimiter(prods[i]) || is_operator(prods[i]) || isTerminal(prods[i]))
+        {
+            std::cout << "other one : " << prods[i] << std::endl;
+            temp.push_back(prods[i]);
+            break;
+        }
+    }
+
+    std::cout << "\n";
+
+    temp = removeRedundancy(temp);
+
+    return temp;
+}
+
+
+void grammer::genFollow()
+{
+
 }
 
 bool grammer::generateParseTable()
 {
-    genTerminals();
-    // genFirst();
-    // genFollow();
+    if(terminals.empty())
+        return false;
+
+
+
     return true;
 }
 
@@ -228,6 +466,19 @@ std::vector<std::string> grammer::getTerminals()
 {
     return terminals;
 }
+
+////////////////////////////////
+
+
+
+
+/*
+    LL1 PARSER
+*/
+void removeLeftRecursion(grammer newGram);
+
+/////////////////////////////////
+
 
 
 void printProductions(grammer newGram)
@@ -291,6 +542,10 @@ grammer fileToGrammer(const std::string str)
         }
     }
 
+    newGram.genTerminals();
+    newGram.genFirst();
+    newGram.genFollow();
+
     return newGram;
 }
 
@@ -308,8 +563,13 @@ grammer removeLeftRecursion(grammer objGram)
 }
 */
 
-int main(int argc, char* argv[])
+int main()
 {
+    std::cout << "Epsilon : " << EPSILON << "\n" << std::endl;
+    
+    if(EPSILON == (char)949)
+        std::cout << "matched" << std::endl;
+
     grammer newGram = fileToGrammer("grammer.txt");
 
     newGram.generateParseTable();
