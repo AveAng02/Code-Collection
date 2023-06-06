@@ -151,11 +151,17 @@ public:
         return *this;
     }
 
+    bool isLeftRecursive()
+    {
+        return leftRecursive;
+    }
+
     void genTerminals();
     void genFirst();
     void genFollow();
-    void addVariables(const std::string);
+    void addVariables(const std::string, bool direct);
     bool addProduction(const std::string);
+    bool addProduction(const std::vector<std::vector<std::string>>);
     bool doesAcceptStr(const std::string);
     bool generateParseTable();
     bool isVariable(const std::string);
@@ -165,6 +171,8 @@ public:
     std::vector<std::vector<std::string>> getFollow();
     std::vector<std::string> getVariables();
     std::vector<std::string> getTerminals();
+    std::vector<std::string> getDelimiter();
+    std::vector<std::string> getOperator();
 
 private:
     std::vector<std::string> recursiveFirst(const std::string);
@@ -173,6 +181,8 @@ private:
 
     bool leftRecursive;
     bool rightRecursive;
+    std::vector<std::string> delimiterList;
+    std::vector<std::string> operatorList;
     std::vector<std::string> variables;
     std::vector<std::string> terminals;
     std::vector<std::vector<std::vector<std::string>>> productions;
@@ -245,6 +255,13 @@ bool grammer::addProduction(const std::string str)
     return true;
 }
 
+bool grammer::addProduction(const std::vector<std::vector<std::string>> vec)
+{
+    // function for directly adding a new production to the grammer
+    productions.push_back(vec);
+    return true;
+}
+
 bool grammer::isVariable(const std::string str)
 {
     for(int i = 0; i < variables.size(); i++)
@@ -263,20 +280,28 @@ bool grammer::isTerminal(const std::string str)
     return false;
 }
 
-void grammer::addVariables(const std::string str)
+void grammer::addVariables(const std::string str, bool direct = false)
 {
-    int i = 0;
-    std::string var = "";
+    if(direct)
+    {
+        // std::cout << "directly adding variable" << std::endl;
+        variables.push_back(str);
+        return;
+    }
+    else
+    {
+        int i = 0;
+        std::string var = "";
 
-    // Extracting variable from production
-    for(; i < str.length(); i++)
-        if(str[i] == '-')
-            break;
+        // Extracting variable from production
+        for(; i < str.length(); i++)
+            if(str[i] == '-')
+                break;
 
-    var = trimSpace(str.substr(0, i));
-    i += 2;
-    variables.push_back(var);
-    ///////////////////////////////////////
+        var = trimSpace(str.substr(0, i));
+        variables.push_back(var);
+        ///////////////////////////////////////
+    }
 }
 
 void grammer::genTerminals()
@@ -371,6 +396,8 @@ std::vector<std::string> grammer::recursiveFirst(const std::string token)
         {
             if(isVariable(prods[i][j]))
             {
+                // TODO : consider for epsilon productions in the variable
+
                 // std::cout << "Variable : " << prods[i][j] << std::endl;
 
                 temp = recursiveFirst(prods[i][j]);
@@ -466,6 +493,8 @@ std::vector<std::string> grammer::recursiveFollow(const std::string token)
 
                     if(isVariable(next))
                     {
+                        // TODO : consider for epsilon productions in the variable
+
                         std::vector<std::string> postFirst;
                         int pos = 0;
                         // Loading firsts of the next element
@@ -549,6 +578,16 @@ std::vector<std::string> grammer::getTerminals()
     return terminals;
 }
 
+std::vector<std::string> grammer::getDelimiter()
+{
+    return delimiterList;
+}
+
+std::vector<std::string> grammer::getOperator()
+{
+    return operatorList;
+}
+
 ////////////////////////////////
 
 
@@ -557,9 +596,99 @@ std::vector<std::string> grammer::getTerminals()
 /*
     LL1 PARSER
 */
-void removeLeftRecursion(grammer newGram);
+bool productionIsRecursive(std::string var, std::vector<std::vector<std::string>> prod)
+{
+    for(int i = 0; i < prod.size(); i++)
+        if(prod[i][0] == var)
+            return true;
+
+    return false;
+}
+
+grammer removeLeftRecursion(grammer oldGram)
+{
+    // eliminating the condition where newGram is not left recursive
+    if(!oldGram.isLeftRecursive())
+        return oldGram;
+
+    grammer newGram;
+
+    std::vector<std::string> oldGramVar = oldGram.getVariables();
+    std::vector<std::vector<std::vector<std::string>>> oldProds = oldGram.getProductions();
+
+    for(int i = 0; i < oldProds.size(); i++)
+    {
+        // std::cout << "Parsing the production for : " << oldGramVar[i] << std::endl;
+
+        if(productionIsRecursive(oldGramVar[i], oldProds[i]))
+        {
+            // std::cout << "Recursion Detected" << std::endl;
+
+            std::vector<std::vector<std::string>> oldModProds;
+            std::vector<std::vector<std::string>> newModProds;
+
+            std::string newVar = oldGramVar[i] + "_";
+
+            // std::cout << newVar << std::endl;
+
+            for(int j = 0; j < oldProds[i].size(); j++)
+            {
+                if(oldProds[i][j][0] == oldGramVar[i])
+                {
+                    // std::cout << "This production had recursion" << std::endl;
+
+                    std::vector<std::string> subVec;
+
+                    for(int a = 1; a < oldProds[i][j].size(); a++)
+                    {
+                        subVec.push_back(oldProds[i][j][a]);
+                    }
+
+                    subVec.push_back(newVar);
+
+                    newModProds.push_back(subVec);
+                }
+                else
+                {
+                    // std::cout << "This production did not have recursion" << std::endl;
+                    oldModProds.push_back(oldProds[i][j]);
+                    oldModProds[oldModProds.size() - 1].push_back(newVar);
+                }
+            }
+
+            // std::cout << "All productions attended" << std::endl;
+
+            newModProds.push_back(std::vector<std::string>{std::string{EPSILON}});
+
+            // old production updated
+            newGram.addVariables(oldGramVar[i], true);
+            newGram.addProduction(oldModProds);
+
+            // new production added
+            newGram.addVariables(newVar, true);
+            newGram.addProduction(newModProds);
+        }
+        else
+        {
+            // std::cout << "No Recursions Detected" << std::endl;
+
+            newGram.addVariables(oldGramVar[i], true);
+            newGram.addProduction(oldProds[i]);
+        }
+
+        // std::cout << newGram.getVariables().size() << std::endl;
+    }
+
+    newGram.genTerminals();
+    newGram.genFirst();
+    newGram.genFollow();
+
+    return newGram;
+}
 
 /////////////////////////////////
+
+
 
 
 
@@ -568,6 +697,8 @@ void printProductions(grammer newGram)
     std::cout << "LOADED GRAMMER :\n";
     std::vector<std::vector<std::vector<std::string>>> prods = newGram.getProductions();
     std::vector<std::string> var = newGram.getVariables();
+
+    std::cout << "Number of variables : " << var.size() << "\nNumber of Productions : " << prods.size() << std::endl;
 
     for(int j = 0, k = 0, i = 0; i < prods.size(); i++)
     {
@@ -593,7 +724,6 @@ void printProductions(grammer newGram)
         std::cout << "\n";
     }
 }
-
 
 grammer fileToGrammer(const std::string str)
 {
@@ -650,10 +780,7 @@ grammer removeLeftRecursion(grammer objGram)
 
 int main()
 {
-    std::cout << "Epsilon : " << EPSILON << "\n" << std::endl;
-    
-    if(EPSILON == (char)949)
-        std::cout << "matched" << std::endl;
+    std::cout << "\n GRAMMER 1\n";
 
     grammer newGram = fileToGrammer("grammer.txt");
 
@@ -661,6 +788,13 @@ int main()
 
     printProductions(newGram);
 
+    grammer noRecursive = removeLeftRecursion(newGram);
+
+    std::cout << "\n NEW NON-RECURSIVE GRAMMER\n";
+
+    printProductions(noRecursive);
+
+    std::cout << "\n GRAMMER 2\n";
 
     grammer newGram2 = fileToGrammer("grammer2.txt");
 
