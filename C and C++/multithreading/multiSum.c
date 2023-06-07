@@ -36,48 +36,68 @@ int main()
     struct param args;
     long int sum = 0;
     time_t timerSt = 0, timerEnd = 0, ttltime = 0;
-    
-    
-    args.a = 1;
-    args.b = 1000000;
+    time_t ttlSTtime = 0, ttlMTtime = 0;
+    int c = 0;
 
-    timerSt = clock();
-    add(&args);
-    timerEnd = clock();
-
-    sum = args.res;
-
-    ttltime = timerEnd - timerSt;
-
-    printf("Total Sum = %ld\n", sum);
-    printf("Time needed by a single thread = %lu\n", ttltime);
-
-
-
-    timerSt = clock();
-
-    for(int i = 0; i < 8; i++)
+    while(c < 100)
     {
-        // First trying with commom argument
-        // then we will try with argument list
-        args.a = (i * 1000000 / 8) + 1;
-        args.b = (i + 1) * 1000000 / 8;
+        args.a = 1;
+        args.b = 1000000;
 
-        sumList[i] = pthread_create(&threadList[i], NULL, add, &args);
-        pthread_join(threadList[i], NULL);
+        timerSt = clock();
+        add(&args);
+        timerEnd = clock();
+
+        sum = args.res;
+
+        ttltime = timerEnd - timerSt;
+
+        // printf("Total Sum = %ld\n", sum);
+        // printf("Time needed by a single thread = %lu\n", ttltime);
+
+        ttlSTtime += ttltime;
+        c++;
     }
 
-    timerEnd = clock();
+    printf("Average single thread time = %lu\n", ttlSTtime / 100);  
+    c = 0;  
 
-    ttltime = timerEnd - timerSt;
 
-    for(int i = 0; i < 8; i++)
+
+    while(c < 100)
     {
-        sum += sumList[i];
+        timerSt = clock();
+
+        for(int i = 0; i < 8; i++)
+        {
+            // First trying with commom argument
+            // then we will try with argument list
+            args.a = (i * 1000000 / 8) + 1;
+            args.b = (i + 1) * 1000000 / 8;
+
+            sumList[i] = pthread_create(&threadList[i], NULL, add, &args);
+            pthread_join(threadList[i], NULL);
+        }
+
+        timerEnd = clock();
+
+        ttltime = timerEnd - timerSt;
+
+        for(int i = 0; i < 8; i++)
+        {
+            sum += sumList[i];
+        }
+
+        // printf("Total Sum = %ld\n", sum);
+        // printf("Time needed by a multiple threads = %lu\n", ttltime);
+
+        ttlMTtime += ttltime;
+        c++;
     }
 
-    printf("Total Sum = %ld\n", sum);
-    printf("Time needed by a multiple threads = %lu\n", ttltime);
+    printf("Average single thread time = %lu\n", ttlMTtime / 100);  
+    c = 0; 
+    
 
     return 0;
 }
