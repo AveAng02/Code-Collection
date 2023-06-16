@@ -555,10 +555,10 @@ std::vector<std::string> grammer::equalityResolution(const std::string token)
 
 bool grammer::generateParseTable()
 {
-    if(terminals.empty())
+    if(terminals.empty() || first.empty() || follow.empty())
         return false;
 
-
+    
 
     return true;
 }
@@ -682,6 +682,7 @@ grammer removeLeftRecursion(grammer oldGram)
     newGram.genTerminals();
     newGram.genFirst();
     newGram.genFollow();
+    newGram.generateParseTable();
 
     return newGram;
 }
@@ -760,6 +761,7 @@ grammer fileToGrammer(const std::string str)
     newGram.genTerminals();
     newGram.genFirst();
     newGram.genFollow();
+    newGram.generateParseTable();
 
     return newGram;
 }
