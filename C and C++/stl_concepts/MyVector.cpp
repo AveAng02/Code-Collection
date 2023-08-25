@@ -1,94 +1,104 @@
 
 #include "MyVector.hpp"
 
-template <class T>
-void Vector<T>::push_back(T value)
+namespace mystl
 {
-    if(buffer == nullptr)
+    template <class T>
+    void Vector<T>::push_back(T value)
     {
-        buffer = new T[1];
-        maxSz = 1;
+        if(!buffer)
+        {
+            buffer = new T[1];
+            maxSz = 1;
+        }
+
+        if(len == maxSz)
+        {
+            T* newbuf = new T[maxSz * 2];
+
+            for(int i = 0; i < len; i++)
+            {
+                newbuf[i] = buffer[i];
+            }
+
+            delete(buffer);
+            buffer = newbuf;
+            maxSz *= 2;
+        }
+
+        len++;
+        buffer[len - 1] = value;
     }
 
-    if(len == maxSz)
+    template <class T>
+    void Vector<T>::pop_back()
     {
-        T* newbuf = new T[maxSz * 2];
+        len--;
 
-        for(int i = 0; i < len; i++)
+        if(len == 0)
+            delete(buffer);
+    }
+
+    template <class T>
+    T* Vector<T>::data() const
+    {
+        return buffer;
+    }
+    
+
+    template <class T>
+    void Vector<T>::resize(const std::size_t newSz)
+    {
+        T* newBuffer = new T[newSz];
+
+        for(int i = 0; i < len && i < newSz; i++)
         {
-            newbuf[i] = buffer[i];
+            newBuffer[i] = buffer[i];
         }
 
         delete(buffer);
-        buffer = newbuf;
-        maxSz *= 2;
+        buffer = newBuffer;
     }
 
-    len++;
-    buffer[len - 1] = value;
-}
-
-template <class T>
-void Vector<T>::pop_back()
-{
-    len--;
-
-    if(len == 0)
-        delete(buffer);
-}
-
-template <class T>
-void Vector<T>::resize(const int newSz)
-{
-    T* newBuffer = new T[newSz];
-
-    for(int i = 0; i < len && i < newSz; i++)
+    template <class T>
+    void Vector<T>::resize(const std::size_t newSz, const T value)
     {
-        newBuffer[i] = buffer[i];
-    }
+        T* newBuffer = new T[newSz];
 
-    delete(buffer);
-    buffer = newBuffer;
-}
-
-template <class T>
-void Vector<T>::resize(const int newSz, const int value)
-{
-    T* newBuffer = new T[newSz];
-
-    for(int i = 0; i < len && i < newSz; i++)
-    {
-        newBuffer[i] = buffer[i];
-    }
-
-    if(newSz > len)
-    {
-        for(int i = len; i < newSz; i++)
+        for(int i = 0; i < len && i < newSz; i++)
         {
-            newBuffer[i] = value;
+            newBuffer[i] = buffer[i];
         }
+
+        if(newSz > len)
+        {
+            for(int i = len; i < newSz; i++)
+            {
+                newBuffer[i] = value;
+            }
+        }
+
+        delete(buffer);
+        buffer = newBuffer;
     }
 
-    delete(buffer);
-    buffer = newBuffer;
-}
+    template <class T>
+    std::size_t Vector<T>::size() const
+    {
+        return len;
+    }
 
-template <class T>
-int Vector<T>::size()
-{
-    return len;
-}
+    template <class T>
+    std::size_t Vector<T>::max_size() const
+    {
+        return maxSz;
+    }
 
-template <class T>
-int Vector<T>::max_size()
-{
-    return maxSz;
-}
-
-template <class T>
-bool Vector<T>::empty()
-{
-    return (buffer == nullptr);
+    template <class T>
+    bool Vector<T>::empty()
+    {
+        return (buffer == nullptr);
+    }
 }
 
 

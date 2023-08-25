@@ -1,11 +1,11 @@
 
 #include <iostream>
-#include "MyVector.hpp"
+#include <MyVector.cpp>
 
 
 int main()
 {
-    Vector<int> intVec;
+    mystl::Vector<int> intVec;
 
     intVec.push_back(5);
     intVec.push_back(7);
@@ -17,7 +17,11 @@ int main()
         std::cout << intVec[i] << std::endl;
     }
 
+    std::cout << intVec.data() << std::endl;
+
+    int* ptr = intVec.data();
+
+    std::cout << *ptr++ << "\n" << *ptr << std::endl;
+
     return 0;
 }
-
-

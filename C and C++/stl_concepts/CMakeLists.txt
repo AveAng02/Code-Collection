@@ -1,14 +1,4 @@
 
-# cmake_minimum_required(VERSION 3.10)
-
-# project(stl_concepts)
-
-
-# add_executable(vecTest main.cpp MyVector.cpp)
-
-# target_include_directories(vecTest PRIVATE 
-#                            ${CMAKE_CURRENT_SOURCE_DIR})
-
 cmake_minimum_required(VERSION 3.12)
 project(MyProject)
 
