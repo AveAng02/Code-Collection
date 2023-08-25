@@ -10,18 +10,32 @@ namespace mystl
         {
             buffer = new T[1];
             maxSz = 1;
+            len++;
+            buffer[len - 1] = value;
+            return;
         }
 
         if(len == maxSz)
         {
-            T* newbuf = new T[maxSz * 2];
+            T* newbuf = nullptr;
 
-            for(int i = 0; i < len; i++)
+            // check if new succeded and 
+            // throw an error accordingly
+            try
             {
-                newbuf[i] = buffer[i];
+                newbuf = new T[maxSz * 2];
             }
+            catch(const std::bad_alloc& e)
+            {
+                std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;
+                return;   
+            }
+            
 
-            delete(buffer);
+            // here newbuf is the new container
+            memcpy(newbuf, buffer, len * sizeof(T));
+
+            delete[] buffer;
             buffer = newbuf;
             maxSz *= 2;
         }
@@ -35,7 +49,8 @@ namespace mystl
     {
         len--;
 
-        if(len == 0)
+        // remove this part
+        if(!len)
             delete(buffer);
     }
 
@@ -44,42 +59,76 @@ namespace mystl
     {
         return buffer;
     }
-    
+
 
     template <class T>
     void Vector<T>::resize(const std::size_t newSz)
     {
-        T* newBuffer = new T[newSz];
+        T* newBuffer = nullptr;
 
-        for(int i = 0; i < len && i < newSz; i++)
+        // check if new succeded and 
+        // throw an error accordingly
+        try
         {
-            newBuffer[i] = buffer[i];
+            newBuffer = new T[maxSz * 2];
+        }
+        catch(const std::bad_alloc& e)
+        {
+            std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;
+            return;
         }
 
-        delete(buffer);
+        // choose the smaller of the two lengths
+        std::size_t resizeLen = (len < newSz) ? len : newSz;
+        // copy the smaller buffer to the new buffer
+        memcpy(newBuffer, buffer, resizeLen * sizeof(T));
+
+        // delete the old memory
+        delete[] buffer;
+        // resign new memory 
         buffer = newBuffer;
+        len = resizeLen;
+        maxSz = newSz;
     }
 
     template <class T>
     void Vector<T>::resize(const std::size_t newSz, const T value)
     {
-        T* newBuffer = new T[newSz];
+        T* newBuffer = nullptr;
 
-        for(int i = 0; i < len && i < newSz; i++)
+        // check if new succeded and 
+        // throw an error accordingly
+        try
         {
-            newBuffer[i] = buffer[i];
+            newBuffer = new T[maxSz * 2];
+        }
+        catch(const std::bad_alloc& e)
+        {
+            std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;
+            return;
         }
 
+        // choose the smaller of the two lengths
+        std::size_t resizeLen = (len < newSz) ? len : newSz;
+        // copy the smaller buffer to the new buffer
+        memcpy(newBuffer, buffer, resizeLen * sizeof(T));
+
+        // if the resized vector is larger 
+        // populate the rest of the spaces with the default value
         if(newSz > len)
         {
-            for(int i = len; i < newSz; i++)
+            for(std::size_t i = len; i < newSz; i++)
             {
                 newBuffer[i] = value;
             }
         }
-
-        delete(buffer);
+        
+        // delete the old memory
+        delete[] buffer;
+        // resign new memory 
         buffer = newBuffer;
+        len = resizeLen;
+        maxSz = newSz;
     }
 
     template <class T>
@@ -97,9 +146,7 @@ namespace mystl
     template <class T>
     bool Vector<T>::empty()
     {
-        return (buffer == nullptr);
+        return !buffer;
     }
 }
-
-
 

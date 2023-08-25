@@ -4,6 +4,10 @@
 #define VECTOR_CLASS
 
 #include <cstddef>
+#include <cstring>
+#include <iostream>
+#include <new>
+
 
 namespace mystl
 {
@@ -32,11 +36,18 @@ namespace mystl
         }
 
 
+        // apply rule of 3 or rule of 5
+
+
         // Capacity
         std::size_t size() const;
         std::size_t max_size() const;
         void resize(const std::size_t newSz);
         void resize(const std::size_t newSz, const T value);
+        bool empty();
+        // capacity
+        // reserve
+        // shrink to fit
 
 
         // Element Access
@@ -50,10 +61,6 @@ namespace mystl
         // Modifiers
         void push_back(T value);
         void pop_back();
-
-        // Iterators
-        bool empty();
-
 
 
     private:
