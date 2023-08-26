@@ -23,7 +23,7 @@ int main()
     std::cout << "\n";
 
     std::cout << "Size : " << intVec.size() << std::endl;
-    std::cout << "Max Size : " << intVec.max_size() << std::endl;
+    std::cout << "Max Size : " << intVec.capacity() << std::endl;
 
     std::cout << intVec.data() << std::endl;
 
@@ -34,7 +34,7 @@ int main()
     intVec.resize(16, 0);
 
     std::cout << "New Resized Vector : ";
-    for(int i = 0; i < intVec.max_size(); i++)
+    for(int i = 0; i < intVec.capacity(); i++)
     {
         std::cout << intVec[i] << ", ";
     }

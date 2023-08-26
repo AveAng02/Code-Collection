@@ -138,7 +138,7 @@ namespace mystl
     }
 
     template <class T>
-    std::size_t Vector<T>::max_size() const
+    std::size_t Vector<T>::capacity() const
     {
         return maxSz;
     }

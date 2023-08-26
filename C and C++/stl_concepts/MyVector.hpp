@@ -17,35 +17,39 @@ namespace mystl
     public:
 
         // Member Functions
-        Vector()
+        Vector() 
+        :   buffer(nullptr),
+            len(0) {}
+
+        // copy constructor 
+        Vector(const Vector& vector) 
+        :   buffer(vector.buffer),
+            len(vector.len),
+            maxSz(vector.maxSz) {}
+
+
+        // copy assignment
+        Vector& operator=(const Vector& vector)
         {
-            buffer = nullptr;
-            len = 0;
+            buffer = vector.buffer;
+            len = vector.len;
+            maxSz = vector.maxSz;
         }
 
+        // destructor
         ~Vector()
         {
             delete[] buffer;
         }
 
-        Vector& operator=(const Vector& vector)
-        {
-            buffer = vector->data();
-            len = vector->size();
-            maxSz = vector->max_size();
-        }
-
-
-        // apply rule of 3 or rule of 5
-
-
+        
         // Capacity
         std::size_t size() const;
-        std::size_t max_size() const;
+        std::size_t capacity() const;
         void resize(const std::size_t newSz);
         void resize(const std::size_t newSz, const T value);
         bool empty();
-        // capacity
+        // max_size
         // reserve
         // shrink to fit
 
