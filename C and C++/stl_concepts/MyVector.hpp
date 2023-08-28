@@ -18,22 +18,28 @@ namespace mystl
 
         // Member Functions
         Vector() 
-        :   buffer(nullptr),
-            len(0) {}
+        :   len(10),
+            maxSz(10)
+        {
+            buffer = new T[maxSz];
+        }
 
         // copy constructor 
         Vector(const Vector& vector) 
-        :   buffer(vector.buffer),
-            len(vector.len),
-            maxSz(vector.maxSz) {}
+        :   len(vector.len),
+            maxSz(vector.maxSz) 
+        {
+            buffer = new T[vector.maxSz];
+            memcpy(buffer, vector.buffer, vector.maxSz * sizeof(T));
+        }
 
-
-        // copy assignment
+        // copy assignment 
         Vector& operator=(const Vector& vector)
         {
-            buffer = vector.buffer;
             len = vector.len;
             maxSz = vector.maxSz;
+            buffer = new T[vector.maxSz];
+            memcpy(buffer, vector.buffer, vector.maxSz * sizeof(T));
         }
 
         // destructor
