@@ -3,35 +3,40 @@
 #include <thread>
 #include <chrono>
 
-
-void bar(bool& n)
+void bar(int& n)
 {
     while(true)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         if(n)
+        {
+            std::cout << "foo" << std::endl;
+        }
+        else
+        {
             std::cout << "bar" << std::endl;
+        }
     }
 }
 
-void foo(bool& n)
+void foo(int& n)
 {
     while(true)
     {
-        std::cout << "foo" << std::endl;
+        std::cin >> n;
     }
 }
     
 
 int main()
 {
-    bool n = false;
+    int n = 0;
 
-    std::thread t1 (bar, n);
-    std::thread t2 (foo, n);
+    std::thread t1 (bar, std::ref(n));
+    std::thread t2 (foo, std::ref(n));
 
-    t1.detach();
-    t2.join();
+    t1.join();
+    t2.detach();
 
     return EXIT_SUCCESS;
 }
