@@ -27,3 +27,5 @@ C and C++/project vizualization/x64
 C and C++/DAA/.vscode/settings.json
 C and C++/a.out
 C and C++/DAA/a.out
+*.out
+*.json
