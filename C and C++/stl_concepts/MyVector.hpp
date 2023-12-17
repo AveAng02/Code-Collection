@@ -21,6 +21,16 @@ namespace mystl
         :   len(10),
             maxSz(10)
         {
+			try
+            {
+                buffer = new T[maxSz];
+            }
+            catch(const std::bad_alloc& e)
+            {
+                std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;
+                return;   
+            }
+			
             buffer = new T[maxSz];
         }
 
@@ -28,8 +38,17 @@ namespace mystl
         Vector(const Vector& vector) 
         :   len(vector.len),
             maxSz(vector.maxSz) 
-        {
-            buffer = new T[vector.maxSz];
+        {			
+			try
+            {
+                buffer = new T[maxSz];
+            }
+            catch(const std::bad_alloc& e)
+            {
+                std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;
+                return;   
+            }
+			
             memcpy(buffer, vector.buffer, vector.maxSz * sizeof(T));
         }
 
@@ -38,8 +57,16 @@ namespace mystl
         {
             len = vector.len;
             maxSz = vector.maxSz;
-            buffer = new T[vector.maxSz];
-            memcpy(buffer, vector.buffer, vector.maxSz * sizeof(T));
+						
+			try
+            {
+                buffer = new T[vector.maxSz];
+				memcpy(buffer, vector.buffer, vector.maxSz * sizeof(T));
+            }
+            catch(const std::bad_alloc& e)
+            {
+                throw std::bad_alloc ("Assignment operator");
+            }
         }
 
         // destructor
@@ -63,7 +90,14 @@ namespace mystl
         // Element Access
         T &operator[](const std::size_t i)
         {
-            return buffer[i];
+			try
+            {
+				return buffer[i];
+            }
+            catch(const std::out_of_range& e)
+            {
+                throw std::out_of_range ("Assignment operator");
+            }
         }
 
         T* data() const;

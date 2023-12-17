@@ -85,6 +85,8 @@ int main()
         std::cout << copyVec2[i] << ",  ";
     }
     std::cout << "\n";
+	
+	std::cout << copyVec[100] << std::endl;
 
     return 0;
 }

@@ -8,9 +8,19 @@ namespace mystl
     {
         if(!buffer)
         {
-            buffer = new T[1];
-            maxSz = 1;
-            len++;
+			// throw an error accordingly
+            try
+            {
+                buffer = new T[10];
+            }
+            catch(const std::bad_alloc& e)
+            {
+                std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;
+                return;   
+            }
+			
+            maxSz = 10;
+            len = 10;
             buffer[len - 1] = value;
             return;
         }
@@ -31,7 +41,6 @@ namespace mystl
                 return;   
             }
             
-
             // here newbuf is the new container
             memcpy(newbuf, buffer, len * sizeof(T));
 
