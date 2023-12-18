@@ -27,11 +27,8 @@ namespace mystl
             }
             catch(const std::bad_alloc& e)
             {
-                std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;
-                return;   
+                std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;   
             }
-			
-            buffer = new T[maxSz];
         }
 
         // copy constructor 
@@ -45,8 +42,7 @@ namespace mystl
             }
             catch(const std::bad_alloc& e)
             {
-                std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;
-                return;   
+                std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;   
             }
 			
             memcpy(buffer, vector.buffer, vector.maxSz * sizeof(T));
@@ -90,14 +86,14 @@ namespace mystl
         // Element Access
         T &operator[](const std::size_t i)
         {
-			try
-            {
-				return buffer[i];
-            }
-            catch(const std::out_of_range& e)
+			if(i >= len)
             {
                 throw std::out_of_range ("Assignment operator");
             }
+			else 
+			{
+				return buffer[i];
+			}
         }
 
         T* data() const;
