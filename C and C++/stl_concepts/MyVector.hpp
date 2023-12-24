@@ -21,6 +21,8 @@ namespace mystl
         :   len(10),
             maxSz(10)
         {
+			// remove try catch and 
+			// add nothrow and check if its nullptr
 			try
             {
                 buffer = new T[maxSz];
@@ -45,6 +47,7 @@ namespace mystl
                 std::cerr << "Error : Failed to allocate memory " << e.what() << std::endl;   
             }
 			
+			// move memcopy to when the buffer successfully allocates memory
             memcpy(buffer, vector.buffer, vector.maxSz * sizeof(T));
         }
 
@@ -56,6 +59,7 @@ namespace mystl
 						
 			try
             {
+				// delete the buffer before allocating new memory
                 buffer = new T[vector.maxSz];
 				memcpy(buffer, vector.buffer, vector.maxSz * sizeof(T));
             }

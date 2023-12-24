@@ -4,6 +4,7 @@
 namespace mystl
 {
     template <class T>
+	// convert to bool to check if the operations succeds or fails
     void Vector<T>::push_back(T value)
     {
         if(!buffer)
@@ -20,7 +21,7 @@ namespace mystl
             }
 			
             maxSz = 10;
-            len = 10;
+            len = 1;
             buffer[len - 1] = value;
             return;
         }
@@ -57,6 +58,8 @@ namespace mystl
     void Vector<T>::pop_back()
     {
         len--;
+		
+		// when len is less than 0 then it has undefined behaviour
 
         // remove this part
         if(!len)
@@ -126,6 +129,7 @@ namespace mystl
         // populate the rest of the spaces with the default value
         if(newSz > len)
         {
+			// replace for loop with memset
             for(std::size_t i = len; i < newSz; i++)
             {
                 newBuffer[i] = value;
