@@ -5,7 +5,7 @@ from tensorflow.keras.layers import Embedding, LSTM, Dense
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-# Load and preprocess the Cornell Movie Dialogues Corpus
+
 def load_conversations():
     conversations = []
     with open('movie_lines.txt', encoding='utf-8', errors='ignore') as file:
@@ -16,6 +16,7 @@ def load_conversations():
             dialogue = parts[-1].strip()
             conversations.append((conversation_id, dialogue))
     return conversations
+
 
 def load_lines():
     lines = {}
@@ -32,15 +33,17 @@ def load_conversation_data(conversation_file, line_file):
     lines = load_lines()
 
     inputs, outputs = [], []
+
     for conv_id, dialogue in conversations:
-        conversation = conv_id.split()
+        conversation = dialogue.split()
         for i in range(len(conversation) - 1):
-            inputs.append(lines[conversation[i]])
-            outputs.append(lines[conversation[i + 1]])
+            inputs.append(lines.get(conversation[i], ''))
+            outputs.append(lines.get(conversation[i + 1], ''))
 
     return inputs, outputs
 
-# Tokenize input and output data
+
+
 def tokenize_data(inputs, outputs):
     tokenizer = Tokenizer()
     tokenizer.fit_on_texts(inputs + outputs)
@@ -49,10 +52,6 @@ def tokenize_data(inputs, outputs):
     input_sequences = tokenizer.texts_to_sequences(inputs)
     output_sequences = tokenizer.texts_to_sequences(outputs)
 
-    # Print the lengths of input_sequences and output_sequences
-    print("Length of input_sequences:", [len(seq) for seq in input_sequences])
-    print("Length of output_sequences:", [len(seq) for seq in output_sequences])
-
     max_len = max(max(len(seq) for seq in input_sequences), max(len(seq) for seq in output_sequences))
     
     input_padded = pad_sequences(input_sequences, maxlen=max_len, padding='post')
@@ -60,22 +59,23 @@ def tokenize_data(inputs, outputs):
 
     return input_padded, output_padded, tokenizer, vocab_size, max_len
 
-# Create the model
+
 def create_model(vocab_size, max_len):
     model = Sequential()
     model.add(Embedding(vocab_size, 50, input_length=max_len, trainable=True))
-    model.add(LSTM(100))
+    model.add(LSTM(100, return_sequences=True))  
     model.add(Dense(vocab_size, activation='softmax'))
 
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     return model
 
-# Train the model
+
 def train_model(model, input_padded, output_padded, epochs=10):
     model.fit(input_padded, output_padded, epochs=epochs)
 
-# Generate a response
+
+
 def generate_response(model, tokenizer, input_text, max_len):
     input_seq = tokenizer.texts_to_sequences([input_text])
     input_padded = pad_sequences(input_seq, maxlen=max_len, padding='post')
@@ -88,12 +88,8 @@ def main():
     lines_file = 'movie_lines.txt'
 
     inputs, outputs = load_conversation_data(conversations_file, lines_file)
-    input_padded, output_padded, tokenizer, vocab_size, max_len = tokenize_data(inputs, outputs)
 
-    # Print the number of conversations, inputs, and outputs
-    print("Number of conversations:", len(inputs))
-    print("Number of inputs:", len(inputs))
-    print("Number of outputs:", len(outputs))
+    input_padded, output_padded, tokenizer, vocab_size, max_len = tokenize_data(inputs, outputs)
 
     model = create_model(vocab_size, max_len)
     train_model(model, input_padded, output_padded, epochs=10)
