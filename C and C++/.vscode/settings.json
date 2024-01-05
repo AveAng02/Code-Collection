@@ -72,6 +72,11 @@
         "xlocmon": "cpp",
         "xloctime": "cpp",
         "xtree": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "bitset": "cpp",
+        "execution": "cpp",
+        "numeric": "cpp",
+        "semaphore": "cpp",
+        "unordered_set": "cpp"
     }
 }
