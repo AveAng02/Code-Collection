@@ -4,34 +4,22 @@
 #include <stdexcept>
 #include <chrono>
 
-
 bool isPrime(uint32_t num)
 {
     for(uint32_t i = 2; i < num; i++)
-    {
         if (num % i == 0)
-        {
             return false;
-        }
-    }
-
     return true;
 }
-
 
 void printPrimes(uint32_t threadID, uint32_t lowerLimit, uint32_t upperLimit)
 {
     std::cout << "Result of thread " << threadID << std::endl;
 
     for(uint32_t i = lowerLimit; i <= upperLimit; i++)
-    {
         if(isPrime(i))
-        {
             std::cout << "  " << i << "   " << std::endl;
-        }
-    }
 }
-
 
 void createThread(uint32_t lwrLmt, uint32_t uprLmt, uint32_t id)
 {
@@ -39,7 +27,6 @@ void createThread(uint32_t lwrLmt, uint32_t uprLmt, uint32_t id)
     std::cout << "New Thread created with ID : " << id << std::endl;
     newThread.join();
 }
-
 
 std::chrono::duration<double> rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
 {
@@ -85,7 +72,6 @@ std::chrono::duration<double> rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uin
 
     return diff;
 }
-
 
 int main()
 {
