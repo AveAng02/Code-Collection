@@ -3,6 +3,7 @@
 #include <thread>
 #include <stdexcept>
 #include <chrono>
+#include <vector>
 
 uint32_t counter = 0;
 
@@ -16,11 +17,14 @@ bool isPrime(uint32_t num)
 
 void printPrimes(uint32_t threadID, uint32_t lowerLimit, uint32_t upperLimit)
 {
-    std::cout << "Result of thread " << threadID << std::endl;
+    // std::cout << "Result of thread " << threadID << std::endl;
+
+    uint32_t a = 0;
 
     for(uint32_t i = lowerLimit; i <= upperLimit; i++)
         if(isPrime(i))
-            std::cout << "  " << i << "   " << std::endl;
+            a++;
+            // std::cout << "  " << i << "   " << std::endl;
 
     counter++;
 }
@@ -28,13 +32,13 @@ void printPrimes(uint32_t threadID, uint32_t lowerLimit, uint32_t upperLimit)
 void createThread(uint32_t lwrLmt, uint32_t uprLmt, uint32_t id)
 {
     std::thread newThread(printPrimes, id, lwrLmt, uprLmt);
-    std::cout << "New Thread created with ID : " << id << std::endl;
+    // std::cout << "New Thread created with ID : " << id << std::endl;
     newThread.detach();
 }
 
 void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
 {
-    std::cout << "Function Starts" << std::endl;
+    // std::cout << "Function Starts" << std::endl;
 
     uint32_t *upprBoundList = new uint32_t[numOfThrds];
     uint32_t *lwrBoundList = new uint32_t[numOfThrds];
@@ -64,31 +68,34 @@ void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
 
     while(counter < numOfThrds);
 
-    std::cout << "Function Ends" << std::endl;
+    // std::cout << "Function Ends" << std::endl;
 }
 
 int main()
 {
-    uint32_t rngUpper = 0, rngLower = 0, threadCount = 0;
+    uint32_t rngUpper = 100000, rngLower = 1, threadCount = 15;
+    double iterations = 10;
+    std::vector<double> times (threadCount, 0.0f);
 
-    std::cout << "Input lower limit of range : ";
-    std::cin >> rngLower;
-    std::cout << "Input upper limit of range : ";
-    std::cin >> rngUpper;
+    std::cout << "Upper : " << rngUpper << "\nLower : " << rngLower << std::endl;
 
-    std::cout << "Enter the number of threads : "; // TODO : remove this input later
-    std::cin >> threadCount; // TODO : remove this input later
+    for(uint32_t j = 0; j < iterations; j++)
+    {
+        for(uint32_t i = 1; i <= threadCount; i++)
+        {
+            auto start = std::chrono::steady_clock::now(); // Starting clock
+            rangedPrimes(rngLower, rngUpper, i);
+            auto stop = std::chrono::steady_clock::now(); // Stopping clock
+            std::chrono::duration<double> diff = stop - start;
+            times[i - 1] += std::chrono::duration<double, std::milli>(diff).count();
+        }
+        std::cout << "Iteration " << j << std::endl;
+    }
 
-    // Checking to make sure that the upperlimit is bigger than the lowerlimit
-    if (rngUpper < rngLower)
-        throw std::logic_error("Invalid range");
-
-    auto start = std::chrono::steady_clock::now(); // Starting clock
-    rangedPrimes(rngLower, rngUpper, threadCount);
-    auto stop = std::chrono::steady_clock::now(); // Stopping clock
-    std::chrono::duration<double> diff = stop - start;
-
-    std::cout << "Time taken : " << std::chrono::duration<double, std::milli>(diff).count() << " ms" << std::endl;
+    for(uint32_t i = 0; i < threadCount; i++)
+    {
+        std::cout << times[i] / iterations << std::endl;
+    }
 
     return 0;
 }
