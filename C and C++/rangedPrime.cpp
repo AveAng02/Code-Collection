@@ -6,19 +6,25 @@
 #include <vector>
 #include <atomic>
 #include <mutex>
+#include <memory>
+#include <cmath>
 
 std::mutex addingLock;
 std::atomic<uint32_t> counter {0};
-std::vector<uint32_t> primeList;
+std::vector<uint32_t> primeBuffer;
 
 bool isPrime(uint32_t num)
 {
-    if(num <= 1)
-        return false;
+    if(num <= 1) return false;
+    if(num <= 3) return true;
+    if(num % 2 == 0 || num % 3 == 0) return false;
 
-    for(uint32_t i = 2; i < num; i++)
+    num = (uint32_t)::sqrt(num) + 1;
+
+    for(uint32_t i = 5; i < num; i += 6)
         if (num % i == 0)
             return false;
+    
     return true;
 }
 
@@ -28,9 +34,10 @@ void printPrimes(uint32_t threadID, uint32_t lowerLimit, uint32_t upperLimit)
         if(isPrime(i))
         {
             addingLock.lock();
-            primeList.push_back(i);
+            primeBuffer.push_back(i);
             addingLock.unlock();
         }
+    
     counter++;
 }
 
@@ -79,9 +86,9 @@ int main()
         auto start = std::chrono::steady_clock::now(); // Starting clock
         rangedPrimes(rngLower, rngUpper, i);
         auto stop = std::chrono::steady_clock::now(); // Stopping clock
-        primeList.clear();
+        primeBuffer.clear();
         std::chrono::duration<double> diff = stop - start;
-        std::cout << std::chrono::duration<double, std::milli>(diff).count() << std::endl;
+        std::cout << i << " " << std::chrono::duration<double, std::milli>(diff).count() << std::endl;
     }
 
     return 0;
