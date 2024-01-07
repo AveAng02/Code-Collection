@@ -69,29 +69,19 @@ void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
 
 int main()
 {
-    uint32_t rngUpper = 1000, rngLower = 1, threadCount = 15;
+    uint32_t rngUpper = 1000000, rngLower = 1, threadCount = 15;
     double iterations = 10;
-    std::vector<double> times (threadCount, 0.0f);
 
     std::cout << "Upper : " << rngUpper << "\nLower : " << rngLower << std::endl;
 
-    for(uint32_t j = 0; j < iterations; j++)
+    for(uint32_t i = 1; i <= threadCount; i++)
     {
-        for(uint32_t i = 1; i <= threadCount; i++)
-        {
-            auto start = std::chrono::steady_clock::now(); // Starting clock
-            rangedPrimes(rngLower, rngUpper, i);
-            auto stop = std::chrono::steady_clock::now(); // Stopping clock
-            primeList.clear();
-            std::chrono::duration<double> diff = stop - start;
-            times[i - 1] += std::chrono::duration<double, std::milli>(diff).count();
-        }
-        std::cout << "Iteration " << j << std::endl;
-    }
-
-    for(uint32_t i = 0; i < threadCount; i++)
-    {
-        std::cout << times[i] / iterations << std::endl;
+        auto start = std::chrono::steady_clock::now(); // Starting clock
+        rangedPrimes(rngLower, rngUpper, i);
+        auto stop = std::chrono::steady_clock::now(); // Stopping clock
+        primeList.clear();
+        std::chrono::duration<double> diff = stop - start;
+        std::cout << std::chrono::duration<double, std::milli>(diff).count() << std::endl;
     }
 
     return 0;
