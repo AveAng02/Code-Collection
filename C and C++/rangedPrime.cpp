@@ -58,12 +58,10 @@ void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
         lwrBoundList[i] = lwrLmt + (i * division); // Loop to set the lower bounds for each thread
 
     for(uint32_t i = 1; i < numOfThrds; i++) // Loop to set the upper bounds for each thread
-    {
         if((lwrBoundList[i] - 1) > uprLmt)
             upprBoundList[i - 1] = lwrBoundList[i] - 1;
         else
             upprBoundList[i - 1] = uprLmt;
-    }
 
     upprBoundList[numOfThrds - 1] = uprLmt;
 
@@ -77,7 +75,6 @@ void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
 int main()
 {
     uint32_t rngUpper = 1000000, rngLower = 1, threadCount = 15;
-    double iterations = 10;
 
     std::cout << "Upper : " << rngUpper << "\nLower : " << rngLower << std::endl;
 
