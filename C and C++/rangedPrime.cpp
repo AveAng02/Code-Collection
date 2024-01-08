@@ -29,6 +29,8 @@ bool isPrime(uint32_t num)
 
 void printPrimes(uint32_t threadID, uint32_t lowerLimit, uint32_t upperLimit)
 {
+    std::cout << "Thread " << threadID << " Created !!" << std::endl;
+
     for(uint32_t i = lowerLimit; i <= upperLimit; i++)
         if(isPrime(i))
         {
@@ -40,6 +42,8 @@ void printPrimes(uint32_t threadID, uint32_t lowerLimit, uint32_t upperLimit)
 
 void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
 {
+    std::cout << "Function Starts!!" << std::endl;
+
     uint32_t *upprBoundList = new uint32_t[numOfThrds];
     uint32_t *lwrBoundList = new uint32_t[numOfThrds];
     uint32_t division = ((uprLmt - lwrLmt) / numOfThrds);
@@ -65,6 +69,8 @@ void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
 
     for(uint32_t i = 0; i < threadList.size(); i++)
         threadList[i].join();
+
+    std::cout << "Function Ends!!" << std::endl;
 }
 
 int main()
@@ -73,13 +79,15 @@ int main()
 
     std::cout << "Upper : " << rngUpper << "\nLower : " << rngLower << std::endl;
 
-    auto start = std::chrono::steady_clock::now(); // Starting clock
-    rangedPrimes(rngLower, rngUpper, threadCount);
-    auto stop = std::chrono::steady_clock::now(); // Stopping clock
-    primeBuffer.clear();
-    std::chrono::duration<double> diff = stop - start;
-
-    std::cout << threadCount << " " << std::chrono::duration<double, std::milli>(diff).count() << std::endl;
+    for(uint32_t i = 1; i < threadCount; i++)
+    {
+        auto start = std::chrono::steady_clock::now(); // Starting clock
+        rangedPrimes(rngLower, rngUpper, i);
+        auto stop = std::chrono::steady_clock::now(); // Stopping clock
+        primeBuffer.clear();
+        std::chrono::duration<double> diff = stop - start;
+        std::cout << i << " " << std::chrono::duration<double, std::milli>(diff).count() << std::endl;
+    }
 
     return 0;
 }
