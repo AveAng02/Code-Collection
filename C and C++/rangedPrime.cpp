@@ -57,9 +57,6 @@ int main()
 
     upprBoundList[threadCount - 1] = rngUpper;
 
-    for(uint32_t i = 0; i < threadCount; i++)
-        std::cout << lwrBoundList[i] << "    " << upprBoundList[i] << std::endl;
-
     auto start = std::chrono::steady_clock::now(); // Starting clock
 
     // creating threads
@@ -75,6 +72,24 @@ int main()
     for(uint32_t i = 0; i < threadCount; i++)
         for(uint32_t j = 0; j < valueList[i].size(); j++)
             primeList.push_back(valueList[i][j]);
+
+    // Reference code
+
+    std::vector<uint32_t> correctnessList;
+
+    for(uint32_t i = rngLower; i < rngUpper; i++)
+        if(isPrime(i))
+            correctnessList.push_back(i);
+
+    for(uint32_t j = 0; j < correctnessList.size(); j++)
+    {
+        if(correctnessList[j] != primeList[j])
+        {
+            std::cout << "Discrepency found at " << j << " position; value of correctnessList : " << correctnessList[j] << " ; primeList : " << primeList[j] << std::endl;
+        }
+    }
+
+    /////////////////
 
     std::chrono::duration<double> diff = stop - start;
 
