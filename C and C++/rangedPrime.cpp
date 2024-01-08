@@ -27,7 +27,7 @@ bool isPrime(uint32_t num)
     return true;
 }
 
-void printPrimes(uint32_t threadID, std::vector<uint32_t>& buffer, uint32_t lowerLimit, uint32_t upperLimit)
+void printPrimes(uint32_t threadID, uint32_t lowerLimit, uint32_t upperLimit)
 {
     for(uint32_t i = lowerLimit; i <= upperLimit; i++)
         if(isPrime(i))
@@ -43,8 +43,9 @@ void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
     uint32_t *upprBoundList = new uint32_t[numOfThrds];
     uint32_t *lwrBoundList = new uint32_t[numOfThrds];
     uint32_t division = ((uprLmt - lwrLmt) / numOfThrds);
-    std::vector<std::vector<uint32_t>> primesList (numOfThrds, std::vector<uint32_t>());
-    std::vector<uint32_t> tempList;
+    // std::vector<std::vector<uint32_t>> primesList (numOfThrds, std::vector<uint32_t>());
+    // std::vector<uint32_t> tempList;
+    std::vector<std::thread> threadList;
 
     // Dividing the range among all the threads
     for(uint32_t i = 0; i < numOfThrds; i++)
@@ -60,15 +61,15 @@ void rangedPrimes(uint32_t lwrLmt, uint32_t uprLmt, uint32_t numOfThrds)
 
     // creating threads
     for(uint32_t i = 0; i < numOfThrds; i++)
-    {
-        std::thread newThread(printPrimes, i, tempList, lwrLmt, uprLmt);
-        newThread.join();
-    }
+        threadList.push_back(std::thread(printPrimes, i, lwrLmt, uprLmt));
+
+    for(uint32_t i = 0; i < threadList.size(); i++)
+        threadList[i].join();
 }
 
 int main()
 {
-    uint32_t rngUpper = 1000000, rngLower = 1, threadCount = 16;
+    uint32_t rngUpper = 10000000, rngLower = 1, threadCount = 16;
 
     std::cout << "Upper : " << rngUpper << "\nLower : " << rngLower << std::endl;
 
