@@ -84,5 +84,8 @@ int main()
 
     std::cout << "Time : " << std::chrono::duration<double, std::milli>(stop - start).count() << std::endl;
 
+    delete lwrBoundList;
+    delete upprBoundList;
+
     return 0;
 }
