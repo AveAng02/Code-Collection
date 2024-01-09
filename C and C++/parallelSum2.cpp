@@ -77,14 +77,20 @@ std::chrono::duration<double> foo(uint64_t numOfThreads, std::vector<uint64_t> r
 
 int main()
 {
-    uint64_t threadCount = 0, numOfValues = 1000000, sum = 0;
+    uint64_t threadCount = 0, numOfValues = 10000000, sum = 0;
     std::vector<uint64_t> randomGenList = genNumList(numOfValues, sum);
 
     std::cout << "Enter the number of threads : ";
     std::cin >> threadCount;
 
-    std::chrono::duration<double> diff = foo(threadCount, randomGenList);
-    std::cout << threadCount << "  " << std::chrono::duration<double, std::milli>(diff).count() << std::endl;
+    std::vector<double> timeTaken (threadCount, 0.0f);
+
+    for(uint64_t j = 0; j < 100; j++)
+        for(uint64_t i = 1; i <= threadCount; i++)
+            timeTaken[i - 1] += std::chrono::duration<double, std::milli>(foo(i, randomGenList)).count();
+
+    for(uint64_t i = 0; i < threadCount; i++)
+        std::cout << timeTaken[i] / 100.0 << std::endl;
 
     return 0;
 }
