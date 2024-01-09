@@ -8,77 +8,92 @@
 #include <cmath>
 #include <random>
 
-std::vector<uint32_t> genNumList(const uint32_t max, const uint32_t min)
+std::vector<uint64_t> genNumList(const uint64_t numOfValues)
 {
-    std::vector<uint32_t> list (max - min);
+    std::vector<uint64_t> list (numOfValues);
     std::random_device device;
     std::mt19937 range(device());
-    std::uniform_int_distribution<std::mt19937::result_type> distribution(1, 10);
+    std::uniform_int_distribution<std::mt19937::result_type> distribution(1, 20);
 
-    for(uint32_t i = 0; i < list.size(); i++)
+    for(uint64_t i = 0; i < numOfValues; i++)
+    {
+        if(i % 100 == 0)
+            std::cout << "Running!! " << i << std::endl;
+        
         list[i] = distribution(range);
+    }
 
     return list;
 }
 
-void printPrimes(const uint32_t threadID, const std::vector<uint32_t>& list, uint32_t& sum)
+void sumOfListValues(const uint64_t threadID, 
+                const std::vector<uint64_t>& list, 
+                const uint64_t min,
+                const uint64_t max,
+                uint64_t& sum)
 {
-    for(uint32_t i = 0; i < list.size(); i++)
+    for(uint64_t i = min; i < max; i++)
         sum += list[i];
 }
 
 int main()
 {
-    uint32_t rngUpper = 10000000, rngLower = 1, threadCount = 16;
-    std::vector<uint32_t> primeList;
+    uint64_t numOfValues = 1000, threadCount = 16, sum = 0, sum2 = 0;
+    std::vector<uint64_t> randomGenList = genNumList(numOfValues);
 
-    std::cout << "Upper : " << rngUpper << "\nLower : " << rngLower << std::endl;
+    for(uint64_t i : randomGenList)
+        sum += i;
+
+    std::cout << "Number of values : " << numOfValues << "\nSum : " << sum << std::endl;
 
     std::cout << "Enter the number of threads : ";
     std::cin >> threadCount;
 
-    uint32_t *upprBoundList = new uint32_t[threadCount];
-    uint32_t *lwrBoundList = new uint32_t[threadCount];
-    uint32_t division = ((rngUpper - rngLower) / threadCount);
-    std::vector<std::vector<uint32_t>> valueList (threadCount);
+    uint64_t *upprBoundList = new uint64_t[threadCount];
+    uint64_t *lwrBoundList = new uint64_t[threadCount];
+    uint64_t division = numOfValues / threadCount;
+    std::vector<uint64_t> valueList (threadCount, 0);
     std::vector<std::thread> threadList (threadCount);
 
     // Dividing the range among all the threads
-    lwrBoundList[0] = rngLower; // Setting the lowest lower bound
-    upprBoundList[threadCount - 1] = rngUpper; // Setting the higgest upper bound
+    lwrBoundList[0] = 0; // Setting the lowest lower bound
+    upprBoundList[threadCount - 1] = numOfValues; // Setting the higgest upper bound
 
     // Loop to define the division of ranges between upper and lower bound
-    for(uint32_t i = 1; i < threadCount; i++)
+    for(uint64_t i = 1; i < threadCount; i++)
     {
-        lwrBoundList[i] = rngLower + (i * division); 
-        upprBoundList[i - 1] = ((lwrBoundList[i] - 1) < rngUpper)? lwrBoundList[i] - 1 : rngUpper;
+        lwrBoundList[i] = i * division; 
+        upprBoundList[i - 1] = ((lwrBoundList[i] - 1) < numOfValues)? lwrBoundList[i] - 1 : numOfValues;
     }
+
+    for(uint64_t i = 0; i < threadCount; i++)
+        std::cout << lwrBoundList[i] << "   " << upprBoundList[i] << std::endl;
 
     auto start = std::chrono::steady_clock::now(); // Starting clock
 
     // creating threads
     for(uint32_t i = 0; i < threadCount; i++)
-        threadList[i] = std::thread(printPrimes, i, std::ref(valueList[i]), lwrBoundList[i], upprBoundList[i]);
+    {
+        threadList[i] = std::thread(sumOfListValues, i, std::ref(randomGenList), lwrBoundList[i], upprBoundList[i], std::ref(valueList[i]));
+    }
 
     // Joining the threads to create a thread fork
     for(uint32_t i = 0; i < threadList.size(); i++)
         threadList[i].join();
 
+    for(uint32_t i = 0; i < threadList.size(); i++)
+        std::cout << valueList[i] << std::endl;
+
     auto stop = std::chrono::steady_clock::now(); // Stopping clock
 
     // Joining back the seperate lists to form the final primes list
     for(uint32_t i = 0; i < threadCount; i++)
-        for(uint32_t j = 0; j < valueList[i].size(); j++)
-            primeList.push_back(valueList[i][j]);
+        sum2 += valueList[i];
 
-    // Reference code
-    for(uint32_t c = 0, i = rngLower; i <= rngUpper; i++)
-        if(isPrime(i))
-        {
-            if(i != primeList[c])
-                std::cout << "Discrepency found at " << c << " position; value of correctnessList : " << i << " ; primeList : " << primeList[c] << std::endl;
-            c++;
-        }
+    std::cout << "Sum from threads : " << sum2 << std::endl;
+
+    if(sum != sum2)
+        std::cout << "Discrepency found : " << sum - sum2 << std::endl;
 
     std::cout << "Time : " << std::chrono::duration<double, std::milli>(stop - start).count() << std::endl;
 
