@@ -16,12 +16,7 @@ std::vector<uint64_t> genNumList(const uint64_t numOfValues)
     std::uniform_int_distribution<std::mt19937::result_type> distribution(1, 20);
 
     for(uint64_t i = 0; i < numOfValues; i++)
-    {
-        if(i % 100 == 0)
-            std::cout << "Running!! " << i << std::endl;
-        
         list[i] = distribution(range);
-    }
 
     return list;
 }
@@ -32,19 +27,17 @@ void sumOfListValues(const uint64_t threadID,
                 const uint64_t max,
                 uint64_t& sum)
 {
-    for(uint64_t i = min; i < max; i++)
+    for(uint64_t i = min; i <= max; i++)
         sum += list[i];
 }
 
 int main()
 {
-    uint64_t numOfValues = 1000, threadCount = 16, sum = 0, sum2 = 0;
+    uint64_t numOfValues = 1000000000, threadCount = 16, sum = 0, sum2 = 0;
     std::vector<uint64_t> randomGenList = genNumList(numOfValues);
 
     for(uint64_t i : randomGenList)
         sum += i;
-
-    std::cout << "Number of values : " << numOfValues << "\nSum : " << sum << std::endl;
 
     std::cout << "Enter the number of threads : ";
     std::cin >> threadCount;
@@ -66,29 +59,23 @@ int main()
         upprBoundList[i - 1] = ((lwrBoundList[i] - 1) < numOfValues)? lwrBoundList[i] - 1 : numOfValues;
     }
 
-    for(uint64_t i = 0; i < threadCount; i++)
-        std::cout << lwrBoundList[i] << "   " << upprBoundList[i] << std::endl;
-
     auto start = std::chrono::steady_clock::now(); // Starting clock
 
     // creating threads
     for(uint32_t i = 0; i < threadCount; i++)
-    {
         threadList[i] = std::thread(sumOfListValues, i, std::ref(randomGenList), lwrBoundList[i], upprBoundList[i], std::ref(valueList[i]));
-    }
 
     // Joining the threads to create a thread fork
     for(uint32_t i = 0; i < threadList.size(); i++)
         threadList[i].join();
-
-    for(uint32_t i = 0; i < threadList.size(); i++)
-        std::cout << valueList[i] << std::endl;
 
     auto stop = std::chrono::steady_clock::now(); // Stopping clock
 
     // Joining back the seperate lists to form the final primes list
     for(uint32_t i = 0; i < threadCount; i++)
         sum2 += valueList[i];
+
+    std::cout << "Number of values : " << numOfValues << "\nSum from linear : " << sum << std::endl;
 
     std::cout << "Sum from threads : " << sum2 << std::endl;
 
