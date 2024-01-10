@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <fstream>
+#include <string>
 
 std::string encription(std::string word, int shift)
 {
@@ -9,7 +11,15 @@ std::string encription(std::string word, int shift)
 
     for(uint32_t newChar = 0, i = 0; i < word.length(); i++)
     {
-        newChar = ((((int)word[i] - 64) + shift) % 26) + 64;
+        newChar = ((word[i] - 65 + shift) % 26) + 65;
+
+        if(word[i] == ' ')
+            newChar = ' ';
+        else if (word[i] == '-')
+            newChar = '-';
+        else if (word[i] == '\'')
+            newChar = '\'';
+
         str += (char)newChar;
     }
 
@@ -21,10 +31,20 @@ std::string decription(std::string word, int shift)
     shift = (shift < 0)? shift + 26 : shift;
 
     std::string str = "";
+    int temp = 0;
 
     for(uint32_t newChar = 0, i = 0; i < word.length(); i++)
     {
-        newChar = ((((int)word[i] - 64) - shift) % 26) + 64;
+        temp = ((word[i] - 65 - shift) < 0) ? word[i] - 65 - shift + 26 : word[i] - 65 - shift;
+        newChar = (temp % 26) + 65;
+
+        if (word[i] == ' ')
+            newChar = ' ';
+        else if (word[i] == '-')
+            newChar = '-';
+        else if (word[i] == '\'')
+            newChar = '\'';
+
         str += (char)newChar;
     }
 
@@ -33,19 +53,24 @@ std::string decription(std::string word, int shift)
 
 int main()
 {
-    std::string str = "";
-    int shift = 0;
+    std::string file = "message.txt";
+    std::string loadData = "", temp = "";
+    int shift = 5;
 
-    std::cout << "Enter String : ";
-    std::cin >> str;
-    std::cout << "Enter Shift : ";
-    std::cin >> shift;
+    std::ifstream myFile(file);
 
-    std::string newWord = encription(str, shift);
-    std::cout << "Encripted Word : " << newWord << std::endl;
+    while (std::getline(myFile, temp))
+    {
+        loadData += temp;
+    }
+
+    std::cout << "Actual sentence : " << loadData << std::endl;
+
+    std::string newWord = encription(loadData, shift);
+    std::cout << "\n\nEncripted Word : " << newWord << std::endl;
 
     std::string oldWord = decription(newWord, shift);
-    std::cout << "Decripting the Word : " << oldWord << std::endl;
+    std::cout << "\n\nDecripting the Word : " << oldWord << std::endl;
 
     return 0;
 }
