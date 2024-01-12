@@ -45,7 +45,7 @@ std::chrono::duration<double> foo(uint64_t numOfThreads, std::vector<uint64_t> r
     // Setting the lowest lower bound and higgest upper bound
     uint64_t lwrBound = 0, uprBound = numOfValues;
 
-    auto start = std::chrono::steady_clock::now(); // Starting clock
+    auto start = std::chrono::high_resolution_clock::now(); // Starting clock
 
     // creating threads
     for(uint64_t tempLwr = 0, i = 0; i < threadCount; i++)
@@ -60,7 +60,7 @@ std::chrono::duration<double> foo(uint64_t numOfThreads, std::vector<uint64_t> r
     for(uint32_t i = 0; i < threadList.size(); i++)
         threadList[i].join();
 
-    auto stop = std::chrono::steady_clock::now(); // Stopping clock
+    auto stop = std::chrono::high_resolution_clock::now(); // Stopping clock
 
     std::chrono::duration<double> diff = stop - start;
 

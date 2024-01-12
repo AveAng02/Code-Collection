@@ -5,6 +5,8 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <chrono>
+#include <time.h>
 #include <set>
 
 void calculateFrequencyPercentages(const std::string& str, 
@@ -51,31 +53,45 @@ void getSet(const std::vector<std::pair<char, double>>& genPairList,
     diffSet = std::set<int>(difference.begin(), difference.end());
 }
 
-std::string decriptionPerWord(std::string word, int shift)
+char decriptionPerChar(char word, int shift)
 {
-    shift = (shift < 0)? shift + 26 : shift;
+    if(word == ' ')
+        return ' ';
+    else if (word == '-')
+        return '-';
+    else if (word == '\'')
+        return '\'';
+    
+    int temp = word - 65 + shift;
+    temp = (temp < 0) ? (temp + 26) : temp;
+    temp += 65;
 
-    std::string str = "";
-    int temp = 0;
-
-    for(uint32_t newChar = 0, i = 0; i < word.length(); i++)
-    {
-        temp = ((word[i] - 65 + shift) < 0) ? word[i] - 65 - shift + 26 : word[i] - 65 - shift;
-        newChar = (temp % 26) + 65;
-
-        if (word[i] == ' ')
-            newChar = ' ';
-        else if (word[i] == '-')
-            newChar = '-';
-        else if (word[i] == '\'')
-            newChar = '\'';
-
-        str += (char)newChar;
-    }
-
-    return str;
+    return (char)temp;
 }
 
+void decriptedFile(std::string str, int shift)
+{
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+    
+    auto time = std::chrono::system_clock::now();
+    std::string name = "decripted(" + std::to_string(shift) + ")" + buf + ".txt";
+    std::string decriptedText = "";
+
+    std::cout << name << std::endl;
+
+    for(uint64_t i = 0; i < str.length(); i++)
+    {
+        decriptedText += decriptionPerChar(str[i], shift);
+    }
+
+    std::ofstream myWrite(name);
+    myWrite << decriptedText;
+    myWrite.close();
+}
 
 
 int main()
@@ -114,9 +130,7 @@ int main()
 
     
     for(std::set<int>::iterator i = diffSet.begin(); i != diffSet.end(); ++i)
-        std::cout << *i << ", ";
+        decriptedFile(loadData, *i);
 
-    std::cout << "\n";
-   
     return 0;
 }
