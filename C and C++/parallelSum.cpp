@@ -42,28 +42,26 @@ int main()
     std::cout << "Enter the number of threads : ";
     std::cin >> threadCount;
 
-    uint64_t *upprBoundList = new uint64_t[threadCount];
-    uint64_t *lwrBoundList = new uint64_t[threadCount];
     uint64_t division = numOfValues / threadCount;
     std::vector<uint64_t> valueList (threadCount, 0);
     std::vector<std::thread> threadList (threadCount);
 
-    // Dividing the range among all the threads
-    lwrBoundList[0] = 0; // Setting the lowest lower bound
-    upprBoundList[threadCount - 1] = numOfValues; // Setting the higgest upper bound
-
-    // Loop to define the division of ranges between upper and lower bound
-    for(uint64_t i = 1; i < threadCount; i++)
-    {
-        lwrBoundList[i] = i * division; 
-        upprBoundList[i - 1] = ((lwrBoundList[i] - 1) < numOfValues)? lwrBoundList[i] - 1 : numOfValues;
-    }
+    // Setting the lowest lower bound and higgest upper bound
+    uint64_t lwrBound = 0, uprBound = numOfValues;
 
     auto start = std::chrono::steady_clock::now(); // Starting clock
 
     // creating threads
-    for(uint32_t i = 0; i < threadCount; i++)
-        threadList[i] = std::thread(sumOfListValues, i, std::ref(randomGenList), lwrBoundList[i], upprBoundList[i], std::ref(valueList[i]));
+    for(uint64_t tempLwr = 0, i = 0; i < threadCount; i++)
+    {
+        tempLwr = lwrBound + division - 1; 
+        uprBound = (tempLwr < numOfValues)? tempLwr : numOfValues;
+        threadList[i] = std::thread(sumOfListValues, i, std::ref(randomGenList), lwrBound, uprBound, std::ref(valueList[i]));
+        
+        std::cout << lwrBound << "   " << uprBound << std::endl;
+        
+        lwrBound += division;
+    }
 
     // Joining the threads to create a thread fork
     for(uint32_t i = 0; i < threadList.size(); i++)
@@ -83,9 +81,6 @@ int main()
         std::cout << "Discrepency found : " << sum - sum2 << std::endl;
 
     std::cout << "Time : " << std::chrono::duration<double, std::milli>(stop - start).count() << std::endl;
-
-    delete lwrBoundList;
-    delete upprBoundList;
 
     return 0;
 }

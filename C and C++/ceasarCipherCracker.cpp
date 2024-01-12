@@ -42,7 +42,11 @@ void getSet(const std::vector<std::pair<char, double>>& genPairList,
     std::vector<int> difference;
 
     for(int i = 0; i < 26; i++)
-        difference.push_back(loadedPairList[i].first - genPairList[i].first);
+    {
+        int diff = loadedPairList[i].first - genPairList[i].first;
+        diff = (diff > 0) ? diff - 26 : diff;
+        difference.push_back(diff);
+    }
 
     diffSet = std::set<int>(difference.begin(), difference.end());
 }
