@@ -53,24 +53,25 @@ std::string decription(std::string word, int shift)
 
 int main()
 {
-    std::string file = "message.txt";
     std::string loadData = "", temp = "";
     int shift = 5;
 
-    std::ifstream myFile(file);
+    std::ifstream myRead("message.txt");
+    std::ofstream myWrite("encripted.txt");
 
-    while (std::getline(myFile, temp))
+    while (std::getline(myRead, temp))
     {
         loadData += temp;
     }
 
-    std::cout << "Actual sentence : " << loadData << std::endl;
-
     std::string newWord = encription(loadData, shift);
-    std::cout << "\n\nEncripted Word : " << newWord << std::endl;
 
-    std::string oldWord = decription(newWord, shift);
-    std::cout << "\n\nDecripting the Word : " << oldWord << std::endl;
+    myWrite << newWord;
+
+    myRead.close();
+    myWrite.close();
+
+    std::cout << decription(newWord, shift)<< std::endl;
 
     return 0;
 }
