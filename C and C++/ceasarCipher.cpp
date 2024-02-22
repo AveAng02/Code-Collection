@@ -57,7 +57,6 @@ int main()
     int shift = 5;
 
     std::ifstream myRead("message.txt");
-    std::ofstream myWrite("encripted.txt");
 
     while (std::getline(myRead, temp))
     {
@@ -66,12 +65,7 @@ int main()
 
     std::string newWord = encription(loadData, shift);
 
-    myWrite << newWord;
-
-    myRead.close();
-    myWrite.close();
-
-    std::cout << decription(newWord, shift)<< std::endl;
+    std::cout << newWord << std::endl;
 
     return 0;
 }
