@@ -7,11 +7,11 @@
 #define PORT 8080
 #define MAX_BUFFER_SIZE 1024
 
-void send_html_response(int client_socket) {
+void response(int client_socket) {
     FILE *html_file = fopen("index.html", "r");
 
     if (html_file == NULL) {
-        perror("Error opening HTML file");
+        printf("Error opening HTML file");
         return;
     }
 
@@ -68,7 +68,7 @@ int main() {
         }
 
         // Send HTML response
-        send_html_response(client_socket);
+        response(client_socket);
 
         printf("HTML file sent to client %s:%d\n", inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
 
