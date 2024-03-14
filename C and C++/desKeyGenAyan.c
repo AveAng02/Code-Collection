@@ -88,7 +88,7 @@ void generateKey(char* key) {
 
 int main() {
 
-    printf("Sajag Agrawal\n21BCT0438");
+    printf("Ayan Acharya\n21BCT0010\n");
 
     // Example 8-byte key (64 bits)
     char key[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
