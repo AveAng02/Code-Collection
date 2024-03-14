@@ -61,14 +61,15 @@ int main(int argc, char** argv)
     uprLimits[num_of_threads - 1] = uprLmt;
 
     // printing the values of the thread
-    for(int i = 0; i < num_of_threads; i++)
-        std::cout << lwrLimits[i] << " " << uprLimits[i] << std::endl;
+    std::cout << lwrLmt << " " << uprLmt << std::endl;
 
     // definig the threads
     for(uint64_t i = 0; i < num_of_threads; i++)
     {
         threadLst[i] =  std::thread(wallisProduct, i, lwrLimits[i], uprLimits[i], std::ref(productLst[i]));
     }
+
+    auto mtStart = std::chrono::steady_clock::now();
 
     for(uint64_t i = 0; i < num_of_threads; i++)
     {
@@ -79,6 +80,13 @@ int main(int argc, char** argv)
     for(int i = 0; i < num_of_threads; i++)
         product *= productLst[i];
 
+    auto mtEnd = std::chrono::steady_clock::now();
+
+    auto mtTime = mtEnd - mtStart;
+
+    std::cout << "Multithreaded time : " << std::chrono::duration<double, std::milli>(mtTime).count() << std::endl;
+
+    // chopping out only the accurate part
     long double copy = product;
     int mod = 0, precision2 = 0;;
 
@@ -94,6 +102,17 @@ int main(int argc, char** argv)
 
     std::cout << std::fixed << std::setprecision(precision2) << 
     "Multithreaded approach : " << product << std::endl;
+
+    auto lrStart = std::chrono::steady_clock::now();
+
+    long double prod = 2.0;
+
+    wallisProduct(0, lwrLmt, uprLmt, prod);
+
+    auto lrEnd = std::chrono::steady_clock::now();
+
+    std::cout << "Linear approach answer : " << prod << std::endl;
+    std::cout << "Linear approach time taken : " << std::chrono::duration<double, std::milli>(lrEnd - lrStart).count() << std::endl;
 
     return 0;
 }
