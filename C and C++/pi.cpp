@@ -3,10 +3,67 @@
 #include <string>
 #include <cmath>
 
+
+
 // Divides divident by divisor and loads the result in the value vector.
 void division(std::vector<uint32_t>& value, uint64_t divident_, uint64_t divisor_, uint64_t precision);
 
-// Adds vector a and b and loads the result in the value vector.
+
+class nPrecisionDigit
+{
+public:
+    nPrecisionDigit()
+    {
+        precision - 10;
+        buffer = std::vector<uint32_t>(precision, 0);
+        decimalPosition = 0;
+    }
+
+    nPrecisionDigit(float n,
+                    uint32_t precision_)
+    :   precision(precision_)
+    {
+        buffer = std::vector<uint32_t>(precision, 0);
+
+        decimalPosition = 0;
+
+        int c = 0, digit = 0;
+        int overPoint = (int)floor(n);
+        int underPoint = (int)((n - (float)overPoint) * pow(10, precision_));
+
+        while(overPoint > 0)
+        {
+            digit 
+        }
+    }
+
+    std::string toString()
+    {
+        std::string str = "";
+
+        for(int i = 0; i < precision; i++)
+        {
+            if(i == decimalPosition)
+                str += ".";
+
+            str += (char)(buffer[i] + 48);
+        }
+
+        return str;
+    }
+
+private:
+    uint32_t precision;
+    uint32_t decimalPosition;
+    std::vector<uint32_t> buffer;
+};
+
+
+/*
+* Vectorized arithmetic 
+* Multiplication, division, addition, multiplication, modulus, left and right shift 
+* implemented through a vector. The numbers are arranged in a vector for extensibility.
+*/
 void sum(std::vector<uint32_t>& value, std::vector<uint32_t>& a, std::vector<uint32_t>& b, uint32_t precision);
 
 // implements the arctan method to calculate pi.
