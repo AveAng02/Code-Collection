@@ -30,11 +30,6 @@ public:
         int c = 0, digit = 0;
         int overPoint = (int)floor(n);
         int underPoint = (int)((n - (float)overPoint) * pow(10, precision_));
-
-        while(overPoint > 0)
-        {
-            digit 
-        }
     }
 
     std::string toString()
