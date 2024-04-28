@@ -4,27 +4,22 @@
 #include <vector>
 #include <thread>
 #include <chrono>
-#include <mutex>
 
-std::mutex mtx;
-
-void multi(std::vector<int>& result, 
+void multi(int& result, 
             const int row, 
             const int col,
             const int size,
-            std::vector<int>& mat1,
-            std::vector<int>& mat2)
+            const std::vector<int>& mat1,
+            const std::vector<int>& mat2)
 {
     int product = 0;
 
     for(int i = 0; i < size; i++)
     {
-        product += mat1[size * row + i] * mat2[size * i + col];
+        result += mat1[size * row + i] * mat2[size * i + col];
     }
 
-    mtx.lock();
-    result[row * size + col] = product;
-    mtx.unlock();
+    result = product;
 }
 
 int main()
@@ -39,11 +34,11 @@ int main()
     // Matrices are stored row wise
     std::vector<int> m1(size * size);
     std::vector<int> m2(size * size);
-    std::vector<int> m3(size * size);
+    std::vector<int> m3(size * size, 0);
 
     for(int i = 0; i < size * size; i++)
     {
-        m1[i] = random50(rng);
+        m1[i] = 5; //random50(rng);
         m2[i] = random50(rng);
     }
 
@@ -81,7 +76,7 @@ int main()
     {
         for(j = 0; j < size; j++)
         {
-            threadList[i * size + j] = std::thread(multi, std::ref(m3), 
+            threadList[i * size + j] = std::thread(multi, m3[i * size + j], 
                                 i, j, size, std::ref(m1), std::ref(m2));
         }
     }

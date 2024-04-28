@@ -20,7 +20,7 @@ bool processEnded = false;
 
 void producer()
 {
-    int c = 1, climit = 100;
+    int c = 1, climit = 10;
 
     while(c <= climit)
     {
@@ -41,17 +41,15 @@ void producer()
         mtx.unlock();
 
         // delay that simulate the production of data
-        std::this_thread::sleep_for(std::chrono::milliseconds(100 / c));
+        std::this_thread::sleep_for(std::chrono::milliseconds(300 / c));
     }
-
-    processEnded = true;
 }
 
 void consumer()
 {
     // Continuing the process until both the process 
     // is over and the queue is empty
-    while(!processEnded || !queue.empty())
+    while(true)
     {
         // locking only for the time of accessing shared memory
         mtx.lock();
@@ -74,11 +72,23 @@ void consumer()
 
 int main()
 {
-    std::thread producerThread(producer);
-    std::thread consumerThread(consumer);
+    std::thread producerThread1(producer);
+    std::thread producerThread2(producer);
+    std::thread producerThread3(producer);
+    std::thread consumerThread1(consumer);
+    std::thread consumerThread2(consumer);
+    std::thread consumerThread3(consumer);
+    std::thread consumerThread4(consumer);
+    std::thread consumerThread5(consumer);
 
-    producerThread.join();
-    consumerThread.join();
+    producerThread1.join();
+    producerThread2.join();
+    producerThread3.join();
+    consumerThread1.join();
+    consumerThread2.join();
+    consumerThread3.join();
+    consumerThread4.join();
+    consumerThread5.join();
 
     return 0;
 }
