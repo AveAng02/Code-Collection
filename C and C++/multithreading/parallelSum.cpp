@@ -33,11 +33,11 @@ void sumOfListValues(const uint64_t threadID,
 
 int main()
 {
-    uint64_t numOfValues = 100000000, threadCount = 16, sum = 0, sum2 = 0;
-    std::vector<uint64_t> randomGenList = genNumList(numOfValues);
+    uint64_t numOfValues = 1500000000, threadCount = 16, sum = 0, sum2 = 0;
+    std::vector<uint64_t> randomGenList (numOfValues, 16546); //= genNumList(numOfValues);
 
-    for(uint64_t i : randomGenList)
-        sum += i;
+    // for(uint64_t i : randomGenList)
+    //    sum += i;
 
     std::cout << "Enter the number of threads : ";
     std::cin >> threadCount;

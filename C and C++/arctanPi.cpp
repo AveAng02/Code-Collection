@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <chrono>
 #include <cfloat>
 #include <iomanip>
 #include <limits>
@@ -32,7 +33,7 @@ int main(int argc, char** argv)
     uint64_t precision = std::numeric_limits<long double>::digits10;
 
     // fetching the number of threads in the system
-    uint64_t num_of_threads = std::thread::hardware_concurrency();
+    uint64_t num_of_threads = (uint32_t)std::thread::hardware_concurrency();
 
     // creating the list of threads
     std::vector<std::thread> threadLst (num_of_threads);
@@ -61,15 +62,16 @@ int main(int argc, char** argv)
     uprLimits[num_of_threads - 1] = uprLmt;
 
     // printing the values of the thread
-    std::cout << lwrLmt << " " << uprLmt << std::endl;
+    for(int i = 0; i < num_of_threads; i++)
+        std::cout << lwrLimits[i] << " " << uprLimits[i] << std::endl;
 
+    auto mtStart = std::chrono::steady_clock::now();
+    
     // definig the threads
     for(uint64_t i = 0; i < num_of_threads; i++)
     {
         threadLst[i] =  std::thread(wallisProduct, i, lwrLimits[i], uprLimits[i], std::ref(productLst[i]));
     }
-
-    auto mtStart = std::chrono::steady_clock::now();
 
     for(uint64_t i = 0; i < num_of_threads; i++)
     {
@@ -84,9 +86,7 @@ int main(int argc, char** argv)
 
     auto mtTime = mtEnd - mtStart;
 
-    std::cout << "Multithreaded time : " << std::chrono::duration<double, std::milli>(mtTime).count() << std::endl;
-
-    // chopping out only the accurate part
+    // chopping out the accurate part of the calculated value only
     long double copy = product;
     int mod = 0, precision2 = 0;;
 
@@ -95,24 +95,13 @@ int main(int argc, char** argv)
         mod = (int)copy % 10;
         
         if((str[i] - 48) == mod)
-        precision2++;
+            precision2++;
 
         copy *= 10;
     }
 
     std::cout << std::fixed << std::setprecision(precision2) << 
     "Multithreaded approach : " << product << std::endl;
-
-    auto lrStart = std::chrono::steady_clock::now();
-
-    long double prod = 2.0;
-
-    wallisProduct(0, lwrLmt, uprLmt, prod);
-
-    auto lrEnd = std::chrono::steady_clock::now();
-
-    std::cout << "Linear approach answer : " << prod << std::endl;
-    std::cout << "Linear approach time taken : " << std::chrono::duration<double, std::milli>(lrEnd - lrStart).count() << std::endl;
 
     return 0;
 }
