@@ -13,22 +13,35 @@ thread dequeues and prints them. Use sleep to simulate processing time.
 
 
 std::queue<int> queue; // shared memory
+int queueLimit = 10;
 std::mutex mtx;
 bool processEnded = false;
 
 
 void producer()
 {
-    for(int i = 1; i <= 10; i++)
+    int c = 1, climit = 100;
+
+    while(c <= climit)
     {
         // locking only for the time of accessing shared memory
         mtx.lock();
-        queue.push(i);
-        std::cout << "Produced a Integer: " << i << std::endl;
+
+        // Making sure the queue limit is not exceeded
+        if(queue.size() <= queueLimit)
+        {
+            queue.push(c);
+            std::cout << "Produced a Integer: " << queue.front() << std::endl;
+            c++;
+        }
+        else
+        {
+            std::cout << "Queue is Full" << std::endl;
+        }
         mtx.unlock();
 
         // delay that simulate the production of data
-        std::this_thread::sleep_for(std::chrono::milliseconds(100 * i));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100 / c));
     }
 
     processEnded = true;
