@@ -11,12 +11,11 @@ thread dequeues and prints them. Use sleep to simulate processing time.
 #include <mutex>
 #include <queue>
 
-
 std::queue<int> queue; // shared memory
 int queueLimit = 10;
 std::mutex mtx;
-bool processEnded = false;
-
+int producerNumber = 0;
+int producerEnded = 0;
 
 void producer()
 {
@@ -43,26 +42,39 @@ void producer()
         // delay that simulate the production of data
         std::this_thread::sleep_for(std::chrono::milliseconds(300 / c));
     }
+
+    producerEnded++;
 }
 
 void consumer()
 {
+    int sz = 0;
+    int var = 0;
+
     // Continuing the process until both the process 
     // is over and the queue is empty
     while(true)
     {
         // locking only for the time of accessing shared memory
         mtx.lock();
-        if(!queue.empty())
+        sz = queue.empty();
+        mtx.unlock();
+
+        if(sz > 0)
         {
-            std::cout << "Consuming: " << queue.front() << std::endl;
+            mtx.lock();
+            var = queue.front();
             queue.pop();
+            mtx.unlock();
+            std::cout << "Consuming: " << var << std::endl;
         }
         else
         {
             std::cout << "Queue Empty" << std::endl;
         }
-        mtx.unlock();
+
+        if(producerEnded != 0 && producerEnded == producerNumber && sz == 0)
+            break;
         
         // delay that simulates processing of consumed data
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -72,14 +84,14 @@ void consumer()
 
 int main()
 {
+    producerNumber = 3;
+
     std::thread producerThread1(producer);
     std::thread producerThread2(producer);
     std::thread producerThread3(producer);
     std::thread consumerThread1(consumer);
     std::thread consumerThread2(consumer);
     std::thread consumerThread3(consumer);
-    std::thread consumerThread4(consumer);
-    std::thread consumerThread5(consumer);
 
     producerThread1.join();
     producerThread2.join();
@@ -87,8 +99,6 @@ int main()
     consumerThread1.join();
     consumerThread2.join();
     consumerThread3.join();
-    consumerThread4.join();
-    consumerThread5.join();
 
     return 0;
 }

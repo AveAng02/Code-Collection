@@ -35,6 +35,7 @@ int main()
     std::vector<int> m1(size * size);
     std::vector<int> m2(size * size);
     std::vector<int> m3(size * size, 0);
+    std::vector<int> m4(size * size, 0);
 
     for(int i = 0; i < size * size; i++)
     {
@@ -69,25 +70,30 @@ int main()
     // Block for parallel multiplication
     std::vector<std::thread> threadList(size * size);
 
-    start = std::chrono::steady_clock::now();
+    auto start2 = std::chrono::steady_clock::now();
 
     // Thread creation loop
     for(int i = 0, j = 0; i < size; i++)
     {
         for(j = 0; j < size; j++)
         {
-            threadList[i * size + j] = std::thread(multi, m3[i * size + j], 
-                                i, j, size, std::ref(m1), std::ref(m2));
+            threadList[i * size + j] 
+            = std::thread(multi, std::ref(m4[i * size + j]), 
+                i, j, size, std::ref(m1), std::ref(m2));
         }
     }
+
+    auto end2 = std::chrono::steady_clock::now();
 
     for(auto& threads : threadList)
         threads.join();
 
-    end = std::chrono::steady_clock::now();
+    auto end3 = std::chrono::steady_clock::now();
 
     std::cout << "Parallel time taken = " << 
-    std::chrono::duration<double, std::micro>(end - start).count() << std::endl;
+    std::chrono::duration<double, std::micro>(end3 - start2).count() 
+    << "\nThread creation time = " << 
+    std::chrono::duration<double, std::micro>(end2 - start2).count() << std::endl;
 
     return 0;
 }
