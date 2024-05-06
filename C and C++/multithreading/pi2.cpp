@@ -1,10 +1,13 @@
+/*
+* g++ -Wall -g -o pi pi2.cpp -fopenmp
+*/
 
 #include <iostream>
 #include <chrono>
 #include <vector>
 #include <omp.h>
 
-#define num_of_steps 100000000
+#define num_of_steps 10000000
 #define pad 8
 
 double fourOverX2(double lowerLimit, 
@@ -84,20 +87,28 @@ double fourOverX2WithSync
 
 double fourOverX2For
                 (double lowerLimit, 
-                double upperLimit)
+                double upperLimit,
+                int NUM_OF_THREADS)
 {
-    double value = 0.0;
+    int i;
     double dx = 1 / (double) num_of_steps;
-    double x, numerator = 4 * dx;
+    double sum = 0.0, neum = 4.0 * dx;
 
-    #pragma omp parallel for
-        for(int i = 0; i < num_of_steps; i++)
-        {
-            x = lowerLimit + (i * i + i) * dx / 2;
-            value += numerator / (1.0 + x * x);
-        }
+    omp_set_num_threads(NUM_OF_THREADS);
 
-    return value;
+    #pragma omp parallel
+    {
+        double x;
+
+        #pragma omp for reduction(+:sum)
+            for(i = 0; i < num_of_steps; i++)
+            {
+                x = (i + 0.5) * dx;
+                sum += neum / (1.0 + x * x);
+            }
+    }
+
+    return sum;
 }
 
 
@@ -113,7 +124,8 @@ int main()
     auto end = std::chrono::system_clock::now();
 
     std::cout << "Linear PI: " << value << "\nLinear Time Taken: " 
-    << std::chrono::duration<double, std::micro>(end - start).count()  << std::endl;
+    << std::chrono::duration<double, std::micro>(end - start).count() 
+    << std::endl;
 
     std::cout << "\nParallel PI: \n";
 
@@ -144,13 +156,18 @@ int main()
         std::micro>(end - start).count()  << std::endl;
     }
 
-    start = std::chrono::system_clock::now();
-    value = fourOverX2(0, 1);
-    end = std::chrono::system_clock::now();
+    std::cout << "\nWith Parallel For and reduction" << std::endl;
 
-    std::cout << "\nParallel for PI: " << value << "\nParallel For Time Taken: " 
-    << std::chrono::duration<double, std::micro>(end - start).count()  << std::endl;
+    for(int i = 1; i <= num_of_threads; i++)
+    {
+        start = std::chrono::system_clock::now();
+        value = fourOverX2For(0, 1, i);
+        end = std::chrono::system_clock::now();
 
+        std::cout << "Value: " << value << "   Number of Threads: "
+        << i << "   Time Taken: " << std::chrono::duration<double, 
+        std::micro>(end - start).count()  << std::endl;
+    }
 
     return 0;
 }
