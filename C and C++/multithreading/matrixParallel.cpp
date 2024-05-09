@@ -6,6 +6,22 @@
 #include <chrono>
 #include <omp.h>
 
+bool correctness(const std::vector<int>& m1,
+                const std::vector<int>& m2,
+                int size)
+{
+    for(int i = 0; i < size; i++)
+    {
+        for(int j = 0; j < size; j++)
+        {
+            if(m1[i * size + j] != m2[i * size + j])
+                return false;
+        }
+    }
+
+    return true;
+}
+
 void serialMulti(const std::vector<int>& m1,
                 const std::vector<int>& m2,
                 int size,
@@ -27,7 +43,7 @@ void serialMulti(const std::vector<int>& m1,
     }
 }
 
-void parallelMulti(const std::vector<int>& m1,
+void parallelMultiSMPD(const std::vector<int>& m1,
                 const std::vector<int>& m2,
                 int size,
                 int number_of_threads,
@@ -52,7 +68,7 @@ void parallelMulti(const std::vector<int>& m1,
     number of threads: 15   time taken = 2.26283    performance = 1356.04
     number of threads: 16   time taken = 1.90193    performance = 1613.36
     */
-    // With SMPD
+    
     int id = 0;
 
     omp_set_num_threads(number_of_threads);
@@ -64,7 +80,7 @@ void parallelMulti(const std::vector<int>& m1,
         #pragma omp for
             for(int i = id; i < size; i += number_of_threads) // Row     
             {
-                for(int j = id; j < size; j += number_of_threads) // Column   
+                for(int j = 0; j < size; j++) // Column   
                 {
                     for(int k = 0; k < size; k++)
                     {
@@ -73,8 +89,14 @@ void parallelMulti(const std::vector<int>& m1,
                 }
             }
     }
+}
 
-
+void parallelMulti(const std::vector<int>& m1,
+                const std::vector<int>& m2,
+                int size,
+                int number_of_threads,
+                std::vector<int>& m3)
+{
     /*
     Parallel Matrix Multiplication:
     number of threads: 1   time taken = 3297.32    performance = 1
@@ -93,8 +115,8 @@ void parallelMulti(const std::vector<int>& m1,
     number of threads: 14   time taken = 322.201    performance = 10.2337
     number of threads: 15   time taken = 323.114    performance = 10.2048
     number of threads: 16   time taken = 293.603    performance = 11.2305
+    */
     
-    // Without SMPD
     omp_set_num_threads(number_of_threads);
 
     #pragma omp parallel
@@ -111,7 +133,6 @@ void parallelMulti(const std::vector<int>& m1,
                 }
             }
     }
-    */
 }
 
 
@@ -151,22 +172,33 @@ int main()
 
     // Block for parallel multiplication
     std::cout << "\nParallel Matrix Multiplication:\n";
+    std::cout << "Without SMPD : ";
 
-    for(int i = 1; i <= 16; i++)
-    {
-        start = std::chrono::steady_clock::now();
+    start = std::chrono::steady_clock::now();
+    parallelMulti(m1, m2, size, 16, m4);
+    end = std::chrono::steady_clock::now();
 
-        parallelMulti(m1, m2, size, i, m3);
+    parallelTime = std::chrono::duration<double, std::milli>(end - start).count();
 
-        end = std::chrono::steady_clock::now();
+    std::cout << parallelTime;
 
-        if(i == 1)
-            serialTime = std::chrono::duration<double, std::milli>(end - start).count();
+    if(correctness(m3, m4, size))
+        std::cout << "  calculated correctly";
+    else
+        std::cout << "  calculation incorrect";
 
-        parallelTime = std::chrono::duration<double, std::milli>(end - start).count();
+    start = std::chrono::steady_clock::now();
+    parallelMultiSMPD(m1, m2, size, 16, m4);
+    end = std::chrono::steady_clock::now();
 
-        std::cout << "number of threads: " << i << "   time taken = " << parallelTime << "    performance = " << serialTime / parallelTime << std::endl;
-    }
+    parallelTime = std::chrono::duration<double, std::milli>(end - start).count();
+
+    std::cout << "\nWith SMPD: " << parallelTime;
+
+    if(correctness(m3, m4, size))
+        std::cout << "  calculated correctly\n";
+    else
+        std::cout << "  calculation incorrect\n";
 
     return 0;
 }
