@@ -2,42 +2,45 @@
 
 #include <iostream>
 #include <thread>
-#include <mutex>
+#include <chrono>
 
-std::mutex odd, even;
-
-void printersOdd()
+void printersOdd(bool& sharedVar)
 {
     int initial = 1;
 
     while(true)
     {
-        odd.lock();
         std::cout << "Odd  = " << initial << std::endl;
         initial += 2;
-        even.unlock();
+        sharedVar = false;
+
+        while(!sharedVar)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
-void printersEven()
+void printersEven(bool& sharedVar)
 {
     int initial = 2;
 
     while(true)
     {
-        even.lock();
         std::cout << "Even = " << initial << std::endl;
         initial += 2;
-        odd.unlock();
+
+        sharedVar = true;
+
+        while(sharedVar)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
 int main()
 {
-    even.lock();
+    bool sharedVar = true;
 
-    std::thread oddThread(printersOdd);
-    std::thread evenThread(printersEven);
+    std::thread oddThread(printersOdd, std::ref(sharedVar));
+    std::thread evenThread(printersEven, std::ref(sharedVar));
 
     oddThread.join();
     evenThread.join();
