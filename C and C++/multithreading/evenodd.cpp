@@ -3,7 +3,6 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-#include <chrono>
 
 std::mutex odd, even;
 
@@ -16,7 +15,6 @@ void printersOdd()
         odd.lock();
         std::cout << "Odd  = " << initial << std::endl;
         initial += 2;
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
         even.unlock();
     }
 }
@@ -30,7 +28,6 @@ void printersEven()
         even.lock();
         std::cout << "Even = " << initial << std::endl;
         initial += 2;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         odd.unlock();
     }
 }
