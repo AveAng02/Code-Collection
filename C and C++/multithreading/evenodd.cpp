@@ -10,12 +10,16 @@ void printersOdd(bool& sharedVar)
 
     while(true)
     {
-        std::cout << "Odd  = " << initial << std::endl;
-        initial += 2;
-        sharedVar = false;
-
-        while(!sharedVar)
+        if(!sharedVar)
+        {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        else
+        {
+            std::cout << "Odd  = " << initial << std::endl;
+            initial += 2;
+            sharedVar = false;
+        } 
     }
 }
 
@@ -25,13 +29,16 @@ void printersEven(bool& sharedVar)
 
     while(true)
     {
-        std::cout << "Even = " << initial << std::endl;
-        initial += 2;
-
-        sharedVar = true;
-
-        while(sharedVar)
+        if(sharedVar)
+        {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        else
+        {
+            std::cout << "Even = " << initial << std::endl;
+            initial += 2;
+            sharedVar = true;
+        }            
     }
 }
 
