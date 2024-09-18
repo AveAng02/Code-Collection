@@ -3,42 +3,41 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <condition_variable>
 
-void printersOdd(bool& sharedVar)
+std::condition_variable cv;
+std::mutex mtx;
+bool oddTurn = true;
+
+void printersOdd()
 {
-    int initial = 1;
+    std::unique_lock oddLock(mtx);
+    cv.notify_all();
+    int val = 1;
 
     while(true)
     {
-        if(!sharedVar)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        else
-        {
-            std::cout << "Odd  = " << initial << std::endl;
-            initial += 2;
-            sharedVar = false;
-        } 
+        cv.wait(oddLock, []{ return oddTurn; });
+        std::cout << "Odd  = " << val << std::endl;
+        val += 2;
+        oddTurn = false;
+        cv.notify_all();
     }
 }
 
-void printersEven(bool& sharedVar)
+void printersEven()
 {
-    int initial = 2;
+    std::unique_lock evenLock(mtx);
+    cv.notify_all();
+    int val = 2;
 
     while(true)
     {
-        if(sharedVar)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        else
-        {
-            std::cout << "Even = " << initial << std::endl;
-            initial += 2;
-            sharedVar = true;
-        }            
+        cv.wait(evenLock, []{ return !oddTurn; });
+        std::cout << "Even = " << val << std::endl;
+        val += 2;
+        oddTurn = true;
+        cv.notify_all();
     }
 }
 
@@ -46,8 +45,8 @@ int main()
 {
     bool sharedVar = true;
 
-    std::thread oddThread(printersOdd, std::ref(sharedVar));
-    std::thread evenThread(printersEven, std::ref(sharedVar));
+    std::thread oddThread(printersOdd);
+    std::thread evenThread(printersEven);
 
     oddThread.join();
     evenThread.join();
