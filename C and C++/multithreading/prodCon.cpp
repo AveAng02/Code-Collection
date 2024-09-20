@@ -13,49 +13,82 @@ std::condition_variable cdvar;
 std::mutex mtx;
 class mat3X3{
 public:
-    std::vector<float> mat;
+    std::vector<std::vector<int>> mat;
+    int len;
 
     mat3X3()
     {
-        mat = std::vector<float>(9, 0);
+        len = 3;
+        mat = std::vector<std::vector<int>>(len, std::vector<int>(len));
+        
+        float val = 0.0f;
+
+        for(int i = 0; i < len; i++)
+        {
+            for(int j = 0; j < len; j++)
+            {
+                mat[i][j] = 20 * (rand() / (float)RAND_MAX);
+            }
+        }
     }
 
     void print()
     {
-        for(int i = 0; i < 9; i++)
+        for(int i = 0; i < len; i++)
         {
-            if(i % 3 == 0)
+            for(int j = 0; j < len; j++)
             {
-                std::cout << "\n";
+                std::cout << mat[i][j] << ", ";
             }
 
-            std::cout << mat[i] << ", ";
+            std::cout << "\n";
+        }
+    }
+
+    mat3X3 multiply(mat3X3 mat1)
+    {
+        int sum = 0;
+        mat3X3 mat2;
+
+        for(int i = 0; i < len; i++)
+        {
+            sum = 0;
+
+            for(int j = 0; j < len; j++)
+            {
+                for(int k = 0; k < len; k++)
+                {
+                    sum += mat[i][k] * mat1.mat[k][i];
+                }
+
+                mat2.mat[i][j] = sum;
+            }
         }
 
-        std::cout << "\n";
+        return mat2;
     }
 };
 std::stack<mat3X3> matrixStack;
-int maxStack = 6;
+int maxStack = 100;
 
 void producer(uint32_t producerID);
 void consumer(uint32_t consumerID);
 
 int main(int argc, char ** argv)
 {
-    std::vector<std::thread> threadlist(2);
+    std::vector<std::thread> threadlist(10);
 
-    for(int i = 0; i < 1; i++)
+    for(int i = 0; i < 2; i++)
     {
         threadlist[i] = std::thread(producer, i);
     }
 
-    for(int i = 1; i < 2; i++)
+    for(int i = 2; i < 10; i++)
     {
         threadlist[i] = std::thread(consumer, i);
     }
 
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 10; i++)
     {
         threadlist[i].join();
     }
@@ -67,6 +100,8 @@ void producer(uint32_t producerID)
 {
     std::unique_lock<std::mutex> prodmtx(mtx);
 
+    int num = 0;
+
     prodmtx.unlock();
 
     while(true)
@@ -74,9 +109,13 @@ void producer(uint32_t producerID)
         // generating 1 matrices
         // adding 1 matrices to the stack
         prodmtx.lock();
-        matrixStack.push(mat3X3());
-        // std::cout << producerID << std::endl;
-        // matrixStack.top().print();
+
+        if(matrixStack.size() < maxStack)
+        {
+            matrixStack.push(mat3X3());
+        }
+        
+        std::cout << "\r" << matrixStack.size() << std::endl;
         prodmtx.unlock();
     }
 }
@@ -84,6 +123,8 @@ void producer(uint32_t producerID)
 void consumer(uint32_t consumerID)
 {
     std::unique_lock<std::mutex> conmtx(mtx);
+
+    int num = 0;
 
     conmtx.unlock();
 
@@ -106,12 +147,15 @@ void consumer(uint32_t consumerID)
             matrixStack.pop();
         }
         
-        conmtx.unlock();
-
         // multiplying both matrices and printing the result
-        std::cout << consumerID << std::endl;
-        mat1.print();
-        mat2.print();
+        
+        if(matrixStack.size() < maxStack)
+        {
+            matrixStack.push(mat3X3());
+        }
+
+        std::cout << "\r" << matrixStack.size() << std::endl;
+        conmtx.unlock();
     }
 }
 
