@@ -21,6 +21,8 @@ at once
 write an iterator and try out the parallel execution policy on your vector class
  
 see why it fails and try to fix it
+
+implement rule of 3
 */
 
 
@@ -42,15 +44,27 @@ namespace mystl
 
         myvector()
         {
-            buffer = new T[10];
+            buffer = new(std::nothrow) T[10];
+
+            if (buffer == nullptr)
+            {
+                throw std::bad_alloc{};
+            }
+
             bufferSize = 10;
             vecSize = 0;
         }
 
         myvector(size_t n)
         {
-            buffer = new T[n];
-            bufferSize = n;
+            buffer = new(std::nothrow) T[n];
+
+            if (buffer == nullptr)
+            {
+                throw std::bad_alloc{};
+            }
+
+            bufferSize = (n > 10)? n : 10;
             vecSize = 0;
         }
 
@@ -62,7 +76,7 @@ namespace mystl
         
         ~myvector()
         {
-            delete buffer;
+            delete[] buffer;
         }
         
         class iterator : public std::iterator<
@@ -93,7 +107,7 @@ namespace mystl
         {
             if (pos >= vecSize)
             {
-                // throw error
+                throw std::out_of_range("Out of Range. Vector not big enough.");
             }
 
             return buffer[pos];
@@ -102,7 +116,6 @@ namespace mystl
         void push_back(const T& value);
         void emplace_back(const T& value);
         void back();
-        T at(const size_t pos);
 
     private:
         T* buffer;
@@ -121,12 +134,17 @@ namespace mystl
     {
         if (vecSize >= bufferSize)
         {
-            T* newBuffer = new T[bufferSize * 2];
+            T* newBuffer = new(std::nothrow) T[bufferSize * 2];
+
+            if (newBuffer == nullptr)
+            {
+                throw std::bad_alloc{};
+            }
+
             memcpy(newBuffer, buffer, bufferSize * 8);
             bufferSize *= 2;
             T* tempBuffer = buffer;
-            buffer = newBuffer;
-            delete tempBuffer;
+            delete[] tempBuffer;
         }
 
         buffer[vecSize] = value;
@@ -147,7 +165,8 @@ namespace mystl
 }
 
 
-void print(const mystl::myvector<int>& vec)
+template<typename T>
+void print(const mystl::myvector<T>& vec)
 {
     for(int i = 0; i < vec.size(); i++)
     {
@@ -163,11 +182,14 @@ void print(const mystl::myvector<int>& vec)
 
 int main()
 {
-    mystl::myvector<int> newvec;
+    mystl::myvector<std::string> newvec;
 
-    for(int i = 0; i < 20; i++)
+    std::string str = "";
+
+    for(int i = (int)'a'; i < (int)'z'; i++)
     {
-        newvec.push_back(i);
+        str += (char)i;
+        newvec.push_back(str);
         print(newvec);
     }
 
