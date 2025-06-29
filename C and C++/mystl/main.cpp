@@ -73,6 +73,28 @@ namespace mystl
             buffer = givenBuffer;
             vecSize = bufferSize = sizeof(givenBuffer) / sizeof(givenBuffer[0]);
         }
+
+        myvector(const myvector& other)
+        {
+            vecSize = other.vecSize;
+            bufferSize = other.bufferSize;
+
+            for(std::size_t i = 0; i < other.bufferSize; i++)
+            {
+                buffer[i] = other.buffer[i];
+            }
+        }
+
+        myvector& operator=(const myvector& vec)
+        {
+            vecSize = vec.vecSize;
+            bufferSize = vec.bufferSize;
+
+            for(std::size_t i = 0; i < vec.bufferSize; i++)
+            {
+                buffer[i] = vec.buffer[i];
+            }
+        }
         
         ~myvector()
         {
@@ -134,17 +156,22 @@ namespace mystl
     {
         if (vecSize >= bufferSize)
         {
-            T* newBuffer = new(std::nothrow) T[bufferSize * 2];
-
-            if (newBuffer == nullptr)
+            T* tempBuffer = new(std::nothrow) T[bufferSize * 2];
+            
+            if (tempBuffer == nullptr)
             {
                 throw std::bad_alloc{};
             }
 
-            memcpy(newBuffer, buffer, bufferSize * 8);
+            for (std::size_t i = 0; i < vecSize; i++)
+            {
+                tempBuffer[i] = buffer[i];
+            }
+
+            delete[] buffer;
+
+            buffer = tempBuffer;
             bufferSize *= 2;
-            T* tempBuffer = buffer;
-            delete[] tempBuffer;
         }
 
         buffer[vecSize] = value;
@@ -186,7 +213,7 @@ int main()
 
     std::string str = "";
 
-    for(int i = (int)'a'; i < (int)'z'; i++)
+    for(int i = (int)'a'; i <= (int)'z'; i++)
     {
         str += (char)i;
         newvec.push_back(str);
