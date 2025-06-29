@@ -32,6 +32,7 @@ implement rule of 3
 #include <cstddef>
 #include <iostream>
 #include <cstring>
+#include <vector>
 
 
 
@@ -70,8 +71,13 @@ namespace mystl
 
         myvector(T givenBuffer[])
         {
-            buffer = givenBuffer;
-            vecSize = bufferSize = sizeof(givenBuffer) / sizeof(givenBuffer[0]);
+            vecSize = sizeof(givenBuffer) / sizeof(givenBuffer[0]);
+            bufferSize = vecSize * 2;
+
+            for (std::size_t i = 0; i < vecSize; i++)
+            {
+                buffer[i] = givenBuffer[i];
+            }
         }
 
         myvector(const myvector& other)
@@ -220,7 +226,14 @@ int main()
         print(newvec);
     }
 
+    std::vector<int>* arrofvec = new std::vector<int>[10];
 
+    for (int i = 0; i < 10; i++)
+    {
+        arrofvec[i] = {i, i*i, i*i*i, i*i*i*i};
+    }
+
+    mystl::myvector<std::vector<int>> vecofvec (arrofvec);
 
     return 0;
 }
