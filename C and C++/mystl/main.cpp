@@ -47,7 +47,7 @@ namespace mystl
         {
             buffer = new(std::nothrow) T[10];
 
-            if (buffer == nullptr)
+            if (!buffer)
             {
                 throw std::bad_alloc{};
             }
@@ -60,7 +60,7 @@ namespace mystl
         {
             buffer = new(std::nothrow) T[n];
 
-            if (buffer == nullptr)
+            if (!buffer)
             {
                 throw std::bad_alloc{};
             }
@@ -69,10 +69,16 @@ namespace mystl
             vecSize = 0;
         }
 
-        myvector(T givenBuffer[])
+        myvector(const T givenBuffer[])
         {
             vecSize = sizeof(givenBuffer) / sizeof(givenBuffer[0]);
             bufferSize = vecSize * 2;
+            buffer = new(std::nothrow) T[bufferSize];
+
+            if(!buffer)
+            {
+                throw std::bad_alloc{};
+            }
 
             for (std::size_t i = 0; i < vecSize; i++)
             {
@@ -85,6 +91,11 @@ namespace mystl
             vecSize = other.vecSize;
             bufferSize = other.bufferSize;
 
+            if(!buffer)
+            {
+                throw std::bad_alloc{};
+            }
+
             for(std::size_t i = 0; i < other.bufferSize; i++)
             {
                 buffer[i] = other.buffer[i];
@@ -95,6 +106,11 @@ namespace mystl
         {
             vecSize = vec.vecSize;
             bufferSize = vec.bufferSize;
+
+            if(!buffer)
+            {
+                throw std::bad_alloc{};
+            }
 
             for(std::size_t i = 0; i < vec.bufferSize; i++)
             {
@@ -164,7 +180,7 @@ namespace mystl
         {
             T* tempBuffer = new(std::nothrow) T[bufferSize * 2];
             
-            if (tempBuffer == nullptr)
+            if (!tempBuffer)
             {
                 throw std::bad_alloc{};
             }
@@ -209,10 +225,6 @@ void print(const mystl::myvector<T>& vec)
     std::cout << "\n";
 }
 
-
-
-
-
 int main()
 {
     mystl::myvector<std::string> newvec;
@@ -237,9 +249,3 @@ int main()
 
     return 0;
 }
-
-
-
-
-
-
