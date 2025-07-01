@@ -128,13 +128,13 @@ namespace mystl
         
         class iterator : public std::iterator<
             std::random_access_iterator_tag,
-            T,
-            T,
-            const T*,
-            T>
+            std::size_t,
+            std::size_t,
+            const std::size_t*,
+            std::size_t>
         {
         public:
-            explicit iterator(T var_) : var(var_) {}
+            explicit iterator(std::size_t var_) : var(var_) {}
 
             iterator operator++(int)
             {
@@ -146,7 +146,7 @@ namespace mystl
             iterator& operator++()
             {
                 var++;
-                return var;
+                return *this;
             }
 
             bool operator!=(iterator& other) const
@@ -256,7 +256,7 @@ void print(const mystl::myvector<T>& vec)
 
 int main()
 {
-    
+    /*
     mystl::myvector<std::string> newvec;
 
     std::string str = "";
@@ -267,7 +267,7 @@ int main()
         newvec.push_back(str);
         print(newvec);
     }
-    
+    */
 
     mystl::myvector<int> tempvec;
 
