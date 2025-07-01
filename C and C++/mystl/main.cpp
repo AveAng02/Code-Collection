@@ -33,6 +33,7 @@ implement rule of 3
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <numeric>
 
 
 
@@ -69,6 +70,7 @@ namespace mystl
             vecSize = 0;
         }
 
+        /*
         myvector(const T givenBuffer[])
         {
             vecSize = sizeof(givenBuffer) / sizeof(givenBuffer[0]);
@@ -85,6 +87,7 @@ namespace mystl
                 buffer[i] = givenBuffer[i];
             }
         }
+        */
 
         myvector(const myvector& other)
         {
@@ -124,18 +127,44 @@ namespace mystl
         }
         
         class iterator : public std::iterator<
-            std::input_iterator_tag,
-            int,
-            int,
-            const int*,
-            int>
+            std::random_access_iterator_tag,
+            T,
+            T,
+            const T*,
+            T>
         {
         public:
-            iterator() {}
-        
-        private:
+            explicit iterator(T var_) : var(var_) {}
+
+            iterator operator++(int)
+            {
+                iterator temp = *this;
+                ++(*this);
+                return temp;
+            }
+
+            iterator& operator++()
+            {
+                var++;
+                return var;
+            }
+
+            bool operator!=(iterator& other) const
+            {
+                return this->var != other.var;
+            }
+
+            reference operator*() const
+            {
+                return var;
+            }
             
+            std::size_t var;
         };
+
+        iterator begin() { return iterator(0); }
+
+        iterator end() { return iterator(vecSize - 1); }
 
         inline std::size_t size() const
         {
@@ -227,6 +256,7 @@ void print(const mystl::myvector<T>& vec)
 
 int main()
 {
+    
     mystl::myvector<std::string> newvec;
 
     std::string str = "";
@@ -237,7 +267,20 @@ int main()
         newvec.push_back(str);
         print(newvec);
     }
+    
 
+    mystl::myvector<int> tempvec;
+
+    for(int i = 0; i < 15; i++)
+    {
+        tempvec.push_back(i);
+    }
+
+    int sum = std::accumulate(tempvec.begin(), tempvec.end(), 0);
+
+    std::cout << "Sum is = " << sum << std::endl;
+
+    /*
     std::vector<int>* arrofvec = new std::vector<int>[10];
 
     for (int i = 0; i < 10; i++)
@@ -246,6 +289,9 @@ int main()
     }
 
     mystl::myvector<std::vector<int>> vecofvec (arrofvec);
+    */
+
+
 
     return 0;
 }
