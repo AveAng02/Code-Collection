@@ -139,15 +139,10 @@ namespace mystl
             using value_type = T;
             using difference_type = std::ptrdiff_t;
             
-            explicit iterator(T* var_) : var(var_) 
-            {
-                std::cout << *var;
-            }
+            explicit iterator(T* var_) : var(var_) {}
 
             iterator operator++(int)
             {
-                std::cout << "1";
-
                 iterator temp = *this;
                 (*this) + sizeof(T);
                 return temp;
@@ -155,23 +150,17 @@ namespace mystl
 
             iterator& operator++()
             {
-                std::cout << "2";
-
-                var + sizeof(T);
+                var++;
                 return *this;
             }
 
             bool operator!=(iterator& other) const
             {
-                std::cout << "3";
-
                 return *this->var != *other.var;
             }
 
             reference operator*() const
             {
-                std::cout << "4";
-
                 return *var;
             }
             
@@ -180,11 +169,13 @@ namespace mystl
 
         iterator begin() const 
         { 
-            std::cout << "begin : "; 
             return iterator(buffer); 
         }
 
-        iterator end() const { std::cout << "end : " << buffer + (vecSize * sizeof(T)); return iterator(buffer + (vecSize * sizeof(T))); }
+        iterator end() const 
+        { 
+            return iterator(buffer + vecSize - 1); 
+        }
 
         inline std::size_t size() const
         {
@@ -276,7 +267,6 @@ void print(const mystl::myvector<T>& vec)
 
 int main()
 {
-    /*
     mystl::myvector<std::string> newvec;
 
     std::string str = "";
@@ -287,14 +277,13 @@ int main()
         newvec.push_back(str);
         print(newvec);
     }
-    */
 
     mystl::myvector<int> tempvec;
     mystl::myvector<int> tempvec1;
 
     for(int i = 0; i < 25; i++)
     {
-        tempvec.push_back(i);
+        tempvec.push_back((i + 2) * (i + 1));
     }
 
     for(int i = 0; i < 25; i++)
@@ -315,9 +304,9 @@ int main()
 
     mystl::myvector<int> tempvec2(tempvec);
 
-    for(int i = 0; i < 25; i++)
+    for(const auto& i : tempvec2)
     {
-        std::cout << tempvec2.at(i) << ", ";
+        std::cout << i << ", ";
     }
 
     std::cout << "\n";
