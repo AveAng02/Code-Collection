@@ -94,6 +94,8 @@ namespace mystl
             vecSize = other.vecSize;
             bufferSize = other.bufferSize;
 
+            buffer = new(std::nothrow) T[bufferSize];
+
             if(!buffer)
             {
                 throw std::bad_alloc{};
@@ -109,6 +111,8 @@ namespace mystl
         {
             vecSize = vec.vecSize;
             bufferSize = vec.bufferSize;
+
+            buffer = new(std::nothrow) T[bufferSize];
 
             if(!buffer)
             {
@@ -286,15 +290,41 @@ int main()
     */
 
     mystl::myvector<int> tempvec;
+    mystl::myvector<int> tempvec1;
 
-    for(int i = 0; i < 15; i++)
+    for(int i = 0; i < 25; i++)
     {
         tempvec.push_back(i);
     }
 
-    int sum = std::accumulate(tempvec.begin(), tempvec.end(), 0);
+    for(int i = 0; i < 25; i++)
+    {
+        std::cout << tempvec.at(i) << ", ";
+    }
 
-    std::cout << "Sum is = " << sum << std::endl;
+    std::cout << "\n";
+
+    tempvec1 = tempvec;
+
+    for(int i = 0; i < 25; i++)
+    {
+        std::cout << tempvec1.at(i) << ", ";
+    }
+
+    std::cout << "\n";
+
+    mystl::myvector<int> tempvec2(tempvec);
+
+    for(int i = 0; i < 25; i++)
+    {
+        std::cout << tempvec2.at(i) << ", ";
+    }
+
+    std::cout << "\n";
+
+    // int sum = std::accumulate(tempvec.begin(), tempvec.end(), 0);
+
+    // std::cout << "Sum is = " << sum << std::endl;
 
     /*
     std::vector<int>* arrofvec = new std::vector<int>[10];
