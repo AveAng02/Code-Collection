@@ -126,45 +126,61 @@ namespace mystl
             delete[] buffer;
         }
         
-        class iterator : public std::iterator<
-            std::random_access_iterator_tag,
-            std::size_t,
-            std::size_t,
-            const std::size_t*,
-            std::size_t>
+        class iterator
         {
         public:
-            explicit iterator(std::size_t var_) : var(var_) {}
+            using reference = T&;
+            using pointer = T*;
+            using iterator_catagory = std::random_access_iterator_tag;
+            using value_type = T;
+            using difference_type = std::ptrdiff_t;
+            
+            explicit iterator(T* var_) : var(var_) 
+            {
+                std::cout << *var;
+            }
 
             iterator operator++(int)
             {
+                std::cout << "1";
+
                 iterator temp = *this;
-                ++(*this);
+                (*this) + sizeof(T);
                 return temp;
             }
 
             iterator& operator++()
             {
-                var++;
+                std::cout << "2";
+
+                var + sizeof(T);
                 return *this;
             }
 
             bool operator!=(iterator& other) const
             {
-                return this->var != other.var;
+                std::cout << "3";
+
+                return *this->var != *other.var;
             }
 
             reference operator*() const
             {
-                return var;
+                std::cout << "4";
+
+                return *var;
             }
             
-            std::size_t var;
+            T* var;
         };
 
-        iterator begin() { return iterator(0); }
+        iterator begin() const 
+        { 
+            std::cout << "begin : "; 
+            return iterator(buffer); 
+        }
 
-        iterator end() { return iterator(vecSize - 1); }
+        iterator end() const { std::cout << "end : " << buffer + (vecSize * sizeof(T)); return iterator(buffer + (vecSize * sizeof(T))); }
 
         inline std::size_t size() const
         {
@@ -246,9 +262,9 @@ namespace mystl
 template<typename T>
 void print(const mystl::myvector<T>& vec)
 {
-    for(int i = 0; i < vec.size(); i++)
+    for(const auto& i : vec)
     {
-        std::cout << vec.at(i) << ", ";
+        std::cout << i << ", ";
     }
 
     std::cout << "\n";
