@@ -34,6 +34,7 @@ implement rule of 3
 #include <cstring>
 #include <vector>
 #include <numeric>
+#include <algorithm>
 
 
 
@@ -101,7 +102,7 @@ namespace mystl
                 throw std::bad_alloc{};
             }
 
-            for(std::size_t i = 0; i < other.bufferSize; i++)
+            for(std::size_t i = 0; i < other.vecSize; i++)
             {
                 buffer[i] = other.buffer[i];
             }
@@ -119,10 +120,17 @@ namespace mystl
                 throw std::bad_alloc{};
             }
 
-            for(std::size_t i = 0; i < vec.bufferSize; i++)
+            for(std::size_t i = 0; i < vec.vecSize; i++)
             {
                 buffer[i] = vec.buffer[i];
             }
+
+            return *this;
+        }
+
+        T operator[](std::size_t pos) const
+        {
+            return buffer[pos];
         }
         
         ~myvector()
@@ -275,29 +283,29 @@ int main()
     {
         str += (char)i;
         newvec.push_back(str);
-        print(newvec);
+        // print(newvec);
     }
 
     mystl::myvector<int> tempvec;
     mystl::myvector<int> tempvec1;
 
-    for(int i = 0; i < 25; i++)
+    for(int i = 0; i < 15; i++)
     {
-        tempvec.push_back((i + 2) * (i + 1));
+        tempvec.push_back(i + 1);
     }
 
-    for(int i = 0; i < 25; i++)
+    for(int i = 0; i < 15; i++)
     {
-        std::cout << tempvec.at(i) << ", ";
+        std::cout << tempvec[i] << ", ";
     }
 
     std::cout << "\n";
 
     tempvec1 = tempvec;
 
-    for(int i = 0; i < 25; i++)
+    for(int i = 0; i < 15; i++)
     {
-        std::cout << tempvec1.at(i) << ", ";
+        std::cout << tempvec1[i] << ", ";
     }
 
     std::cout << "\n";
@@ -311,9 +319,9 @@ int main()
 
     std::cout << "\n";
 
-    // int sum = std::accumulate(tempvec.begin(), tempvec.end(), 0);
+    int sum = std::accumulate(tempvec.begin(), tempvec.end(), 0);
 
-    // std::cout << "Sum is = " << sum << std::endl;
+    std::cout << "Sum is = " << sum << std::endl;
 
     /*
     std::vector<int>* arrofvec = new std::vector<int>[10];
