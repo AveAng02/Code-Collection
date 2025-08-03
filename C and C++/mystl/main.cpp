@@ -128,7 +128,7 @@ namespace mystl
             return *this;
         }
 
-        T operator[](std::size_t pos) const
+        T operator[](const std::size_t pos) const
         {
             return buffer[pos];
         }
@@ -141,13 +141,18 @@ namespace mystl
         class iterator
         {
         public:
-            using reference = T&;
-            using pointer = T*;
-            using iterator_catagory = std::random_access_iterator_tag;
-            using value_type = T;
-            using difference_type = std::ptrdiff_t;
+            using iterator_category = std::random_access_iterator_tag;
+            using value_type        = T;
+            using difference_type   = std::ptrdiff_t;
+            using pointer           = T*;
+            using reference         = T&;
             
             explicit iterator(T* var_) : var(var_) {}
+            
+            int operator-(const iterator& other) const
+            {
+                return var - other.var;
+            }
 
             iterator operator++(int)
             {
@@ -160,6 +165,11 @@ namespace mystl
             {
                 var++;
                 return *this;
+            }
+
+            bool operator==(iterator other) const
+            {
+                return *this->var == *other.var;
             }
 
             bool operator!=(iterator& other) const
@@ -210,8 +220,13 @@ namespace mystl
         void back();
 
     private:
+        // The actual buffer for storing the data
         T* buffer;
+
+        // Size of the buffer
         std::size_t bufferSize;
+
+        // Size of the vector
         std::size_t vecSize;
     };
 }
@@ -322,6 +337,10 @@ int main()
     int sum = std::accumulate(tempvec.begin(), tempvec.end(), 0);
 
     std::cout << "Sum is = " << sum << std::endl;
+
+    bool hasNeg = std::any_of(tempvec1.begin(), tempvec1.end(), [](int x){ return x < 0; });
+
+    std::cout << "Does it have negative number? " << (hasNeg? "yes" : "no") << std::endl;
 
     /*
     std::vector<int>* arrofvec = new std::vector<int>[10];
